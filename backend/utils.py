@@ -122,13 +122,18 @@ def get_img_array(img_path: str, size: tuple) -> np.ndarray:
 def make_gradcam_heatmap(img_array: np.ndarray, model, pred_index=None) -> np.ndarray:
     """Erzeugt eine GradCAM-Heatmap für die Modell-Vorhersage."""
     grad_model = tf.keras.models.Model(
-        [model.inputs],
+        model.inputs,  # nicht [model.inputs] – vermeidet verschachtelte Liste
         [model.get_layer(LAST_CONV_LAYER).output, model.output],
     )
     with tf.GradientTape() as tape:
-        conv_out, preds = grad_model(img_array)
+        outputs = grad_model(img_array)
+        conv_out = outputs[0]
+        preds = outputs[1]
+        # Keras 3 kann preds als Liste zurückgeben – in Tensor umwandeln
+        if isinstance(preds, (list, tuple)):
+            preds = tf.concat(preds, axis=-1)
         if pred_index is None:
-            pred_index = tf.argmax(preds[0])
+            pred_index = int(tf.argmax(preds[0]))
         class_channel = preds[:, pred_index]
 
     grads = tape.gradient(class_channel, conv_out)

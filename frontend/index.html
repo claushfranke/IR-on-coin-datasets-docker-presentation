@@ -272,9 +272,8 @@
     <!-- ═══════════════════════════════════════════ -->
     <script>
         // ─── Konfiguration ───
-        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:8000'
-            : `${window.location.protocol}//${window.location.hostname}:8000`;
+        // API-Anfragen laufen über den Nginx-Proxy – kein hardcodierter Port nötig
+        const API_BASE = '';
 
         let coins = [];
         let selectedCoin = null;
