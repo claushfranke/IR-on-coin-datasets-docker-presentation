@@ -1,0 +1,2 @@
+# Modelle werden beim ersten Start heruntergeladen
+# Dieses Verzeichnis wird als Docker Volume persistiert

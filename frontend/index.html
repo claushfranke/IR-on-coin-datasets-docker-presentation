@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Corpus Nummorum – Münzerkennung</title>
+
+    <!-- TailwindCSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'museum-bg': '#1a1a2e',
+                        'museum-card': '#16213e',
+                        'museum-accent': '#0f3460',
+                        'gold': '#C8A951',
+                        'gold-light': '#E8D48B',
+                        'gold-dark': '#A07E3B',
+                    },
+                    fontFamily: {
+                        'display': ['Playfair Display', 'Georgia', 'serif'],
+                        'body': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body {
+            background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
+            touch-action: manipulation;
+        }
+
+        /* Coin card hover/tap */
+        .coin-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .coin-card:hover, .coin-card:active {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(200, 169, 81, 0.2);
+            border-color: rgba(200, 169, 81, 0.5);
+        }
+
+        /* Touch button */
+        .touch-btn {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            min-height: 56px;
+        }
+        .touch-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Loading spinner – rotierende Münze */
+        @keyframes coinFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .coin-flip {
+            animation: coinFlip 1.5s ease-in-out infinite;
+        }
+        .pulse-text {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Konfidenz-Balken */
+        .confidence-bar {
+            transition: width 0.8s ease-out;
+        }
+
+        /* Fade-In Animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        .fade-in-up-delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .fade-in-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .fade-in-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .fade-in-up-delay-4 { animation-delay: 0.4s; opacity: 0; }
+        .fade-in-up-delay-5 { animation-delay: 0.5s; opacity: 0; }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a2e; }
+        ::-webkit-scrollbar-thumb { background: #C8A951; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-slate-200 overflow-x-hidden">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- APP CONTAINER                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+
+        <!-- ─── SCREEN 1: GALERIE ─── -->
+        <div id="screen-gallery">
+            <!-- Header -->
+            <div class="text-center mb-8 sm:mb-12">
+                <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-gold mb-4"
+                    style="text-shadow: 2px 2px 12px rgba(0,0,0,0.5);">
+                    🪙 Bestimmen Sie eine Münze
+                </h1>
+                <p class="text-slate-400 text-base sm:text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed">
+                    Bitte wählen Sie eine Münze aus, um ihre Münzstätte bzw. ihren Typ zu bestimmen.
+                </p>
+            </div>
+
+            <!-- Münz-Raster -->
+            <div id="coin-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Wird per JS gefüllt -->
+            </div>
+        </div>
+
+        <!-- ─── SCREEN 2: MÜNZE AUSGEWÄHLT ─── -->
+        <div id="screen-selected" class="hidden">
+            <!-- Zurück-Button -->
+            <button onclick="showGallery()"
+                    class="touch-btn mb-6 flex items-center gap-2 text-gold hover:text-gold-light
+                           bg-museum-card/50 px-5 py-3 rounded-xl border border-gold/20 hover:border-gold/40">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                <span class="font-medium">Zurück zur Galerie</span>
+            </button>
+
+            <!-- Überschrift -->
+            <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gold text-center mb-8">
+                Was möchten Sie bei dieser Münze bestimmen?
+            </h2>
+
+            <!-- Münzbilder groß -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 mb-10">
+                <div class="text-center">
+                    <img id="selected-obverse" src="" alt="Vorderseite"
+                         class="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 object-cover rounded-2xl
+                                border-2 border-gold/30 shadow-lg shadow-black/30">
+                    <p class="text-gold/80 text-sm mt-2 font-medium">Vorderseite (Avers)</p>
+                </div>
+                <div class="text-center">
+                    <img id="selected-reverse" src="" alt="Rückseite"
+                         class="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 object-cover rounded-2xl
+                                border-2 border-gold/30 shadow-lg shadow-black/30">
+                    <p class="text-gold/80 text-sm mt-2 font-medium">Rückseite (Revers)</p>
+                </div>
+            </div>
+
+            <!-- Münz-Info -->
+            <div id="selected-info" class="text-center text-slate-400 mb-10"></div>
+
+            <!-- Analyse-Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 max-w-xl mx-auto">
+                <button onclick="startAnalysis('mints')"
+                        class="touch-btn w-full sm:w-auto px-10 py-5 rounded-2xl text-lg sm:text-xl font-bold
+                               bg-gradient-to-br from-gold to-gold-dark text-museum-bg
+                               shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]">
+                    🏛️ Münzstätte
+                </button>
+                <button onclick="startAnalysis('types')"
+                        class="touch-btn w-full sm:w-auto px-10 py-5 rounded-2xl text-lg sm:text-xl font-bold
+                               bg-gradient-to-br from-gold to-gold-dark text-museum-bg
+                               shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]">
+                    📜 Typ
+                </button>
+            </div>
+        </div>
+
+        <!-- ─── SCREEN 3: LADEN ─── -->
+        <div id="screen-loading" class="hidden">
+            <div class="fixed inset-0 z-50 flex items-center justify-center"
+                 style="background: rgba(26, 26, 46, 0.92); backdrop-filter: blur(8px);">
+                <div class="text-center">
+                    <!-- Rotierende Münze -->
+                    <div class="mb-8" style="perspective: 600px;">
+                        <div class="coin-flip inline-block w-32 h-32 sm:w-40 sm:h-40 rounded-full
+                                    bg-gradient-to-br from-gold via-gold-light to-gold-dark
+                                    shadow-2xl shadow-gold/30 flex items-center justify-center"
+                             style="transform-style: preserve-3d;">
+                            <span class="text-5xl sm:text-6xl" style="backface-visibility: hidden;">🪙</span>
+                        </div>
+                    </div>
+                    <h3 class="font-display text-2xl sm:text-3xl text-gold pulse-text mb-3">
+                        Bitte warten
+                    </h3>
+                    <p class="text-slate-400 text-lg pulse-text">Analysiere Münze…</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── SCREEN 4: ERGEBNIS ─── -->
+        <div id="screen-results" class="hidden">
+            <!-- Zurück-Buttons -->
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button onclick="showSelected()"
+                        class="touch-btn flex items-center gap-2 text-gold hover:text-gold-light
+                               bg-museum-card/50 px-5 py-3 rounded-xl border border-gold/20 hover:border-gold/40">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Andere Analyse
+                </button>
+                <button onclick="showGallery()"
+                        class="touch-btn flex items-center gap-2 text-slate-400 hover:text-slate-200
+                               bg-museum-card/30 px-5 py-3 rounded-xl border border-slate-600/30 hover:border-slate-500/50">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                    </svg>
+                    Neue Münze
+                </button>
+            </div>
+
+            <!-- Ergebnis-Titel -->
+            <h2 id="result-title" class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gold mb-8 fade-in-up">
+            </h2>
+
+            <!-- Ergebnis-Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- Linke Spalte: Bilder -->
+                <div class="space-y-6 fade-in-up fade-in-up-delay-1">
+                    <!-- GradCAM -->
+                    <div class="bg-museum-card/60 rounded-2xl border border-gold/20 p-5">
+                        <h3 class="font-display text-lg text-gold mb-3">🔬 Modell-Aufmerksamkeit (GradCAM)</h3>
+                        <p class="text-slate-400 text-sm mb-4">
+                            Die Heatmap zeigt, welche Bildbereiche für die Vorhersage besonders wichtig waren.
+                            Warme Farben (gelb/rot) = hohe Aufmerksamkeit.
+                        </p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <img id="result-combined" src="" alt="Eingabebild"
+                                     class="w-full rounded-xl border border-gold/10">
+                                <p class="text-gold/60 text-xs mt-2">Kombiniertes Eingabebild</p>
+                            </div>
+                            <div class="text-center">
+                                <img id="result-gradcam" src="" alt="GradCAM Heatmap"
+                                     class="w-full rounded-xl border border-gold/10">
+                                <p class="text-gold/60 text-xs mt-2">GradCAM Heatmap</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rechte Spalte: Top-5 Ergebnisse -->
+                <div id="result-predictions" class="space-y-3">
+                    <!-- Wird per JS gefüllt -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- JAVASCRIPT                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <script>
+        // ─── Konfiguration ───
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : `${window.location.protocol}//${window.location.hostname}:8000`;
+
+        let coins = [];
+        let selectedCoin = null;
+
+        // ─── Screens verwalten ───
+        function showScreen(screenId) {
+            ['screen-gallery', 'screen-selected', 'screen-loading', 'screen-results'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showGallery() {
+            selectedCoin = null;
+            showScreen('screen-gallery');
+        }
+
+        function showSelected() {
+            showScreen('screen-selected');
+        }
+
+        // ─── Münz-Galerie laden ───
+        async function loadCoins() {
+            try {
+                const resp = await fetch('coins.json');
+                coins = await resp.json();
+                renderGallery();
+            } catch (e) {
+                console.error('Fehler beim Laden der Münzdaten:', e);
+                document.getElementById('coin-grid').innerHTML =
+                    '<p class="col-span-full text-center text-red-400 text-lg">Münzdaten konnten nicht geladen werden.</p>';
+            }
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('coin-grid');
+            grid.innerHTML = coins.map((coin, i) => `
+                <div class="coin-card cursor-pointer bg-museum-card/60 rounded-2xl border border-white/10
+                            p-4 backdrop-blur-sm" onclick="selectCoin(${i})"
+                     role="button" tabindex="0" aria-label="Münze ${coin.name} auswählen">
+                    <div class="flex gap-3 mb-3">
+                        <img src="${coin.obverse}" alt="Vorderseite"
+                             class="w-1/2 aspect-square object-cover rounded-xl border border-gold/20"
+                             loading="lazy">
+                        <img src="${coin.reverse}" alt="Rückseite"
+                             class="w-1/2 aspect-square object-cover rounded-xl border border-gold/20"
+                             loading="lazy">
+                    </div>
+                    <h3 class="font-display text-gold text-base sm:text-lg font-semibold mb-1 truncate">
+                        ${coin.name}
+                    </h3>
+                    <p class="text-slate-400 text-xs sm:text-sm leading-relaxed line-clamp-2">
+                        ${coin.description || ''}
+                    </p>
+                    ${coin.mint ? `<p class="text-gold/50 text-xs mt-2">${coin.mint} · ${coin.region || ''}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // ─── Münze auswählen ───
+        function selectCoin(index) {
+            selectedCoin = coins[index];
+
+            document.getElementById('selected-obverse').src = selectedCoin.obverse;
+            document.getElementById('selected-reverse').src = selectedCoin.reverse;
+
+            const infoEl = document.getElementById('selected-info');
+            const parts = [selectedCoin.name];
+            if (selectedCoin.mint) parts.push(selectedCoin.mint);
+            if (selectedCoin.region) parts.push(selectedCoin.region);
+            if (selectedCoin.dating) parts.push(selectedCoin.dating);
+            if (selectedCoin.nominal) parts.push(selectedCoin.nominal);
+            infoEl.innerHTML = `<p class="text-base">${parts.join(' · ')}</p>`;
+
+            showScreen('screen-selected');
+        }
+
+        // ─── Analyse starten ───
+        async function startAnalysis(mode) {
+            if (!selectedCoin) return;
+
+            showScreen('screen-loading');
+
+            try {
+                const resp = await fetch(`${API_BASE}/api/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        coin_id: selectedCoin.id,
+                        mode: mode,
+                    }),
+                });
+
+                if (!resp.ok) {
+                    const error = await resp.json().catch(() => ({ detail: 'Unbekannter Fehler' }));
+                    throw new Error(error.detail || `HTTP ${resp.status}`);
+                }
+
+                const data = await resp.json();
+                displayResults(data, mode);
+
+            } catch (e) {
+                console.error('Analyse-Fehler:', e);
+                showScreen('screen-selected');
+                showError(e.message);
+            }
+        }
+
+        // ─── Ergebnis anzeigen ───
+        function displayResults(data, mode) {
+            const modeLabel = mode === 'types' ? 'Typ' : 'Münzstätte';
+            document.getElementById('result-title').textContent = `🎯 Ergebnis – ${modeLabel}`;
+
+            // Bilder setzen
+            document.getElementById('result-combined').src = `data:image/png;base64,${data.combined_image}`;
+            document.getElementById('result-gradcam').src = `data:image/png;base64,${data.gradcam_image}`;
+
+            // Predictions rendern
+            const container = document.getElementById('result-predictions');
+            const medals = ['🥇', '🥈', '🥉', '4.', '5.'];
+
+            container.innerHTML = data.predictions.map((pred, i) => `
+                <div class="fade-in-up fade-in-up-delay-${i + 1}
+                            bg-museum-card/60 rounded-2xl border border-gold/20 p-5
+                            hover:border-gold/40 transition-colors">
+                    <div class="flex items-center gap-4 mb-3">
+                        <!-- Rang -->
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full
+                                    bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/30
+                                    flex items-center justify-center">
+                            <span class="text-lg font-bold ${i === 0 ? 'text-gold' : 'text-gold/60'}">
+                                ${medals[i] || (i + 1) + '.'}
+                            </span>
+                        </div>
+                        <!-- Label -->
+                        <div class="flex-1 min-w-0">
+                            <p class="text-slate-400 text-xs uppercase tracking-wide">
+                                ${mode === 'types' ? 'Typ-ID' : 'Münzstätte'}
+                            </p>
+                            <p class="text-white text-lg font-semibold truncate">
+                                ${pred.display_label}
+                            </p>
+                        </div>
+                        <!-- Prozent -->
+                        <div class="flex-shrink-0 text-right">
+                            <span class="text-2xl font-bold ${i === 0 ? 'text-gold' : 'text-gold/70'}">
+                                ${pred.confidence.toFixed(1)}%
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Konfidenz-Balken -->
+                    <div class="w-full bg-white/5 rounded-full h-2.5 mb-3">
+                        <div class="confidence-bar h-2.5 rounded-full bg-gradient-to-r from-gold-dark via-gold to-gold-light"
+                             style="width: 0%" data-width="${Math.min(pred.confidence, 100)}%">
+                        </div>
+                    </div>
+
+                    <!-- CN-Link -->
+                    <a href="${pred.cn_link}" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-1.5 text-gold/70 hover:text-gold text-sm transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                        Auf Corpus Nummorum ansehen
+                    </a>
+                </div>
+            `).join('');
+
+            showScreen('screen-results');
+
+            // Konfidenz-Balken animieren
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    container.querySelectorAll('.confidence-bar').forEach(bar => {
+                        bar.style.width = bar.dataset.width;
+                    });
+                }, 100);
+            });
+        }
+
+        // ─── Fehlermeldung ───
+        function showError(message) {
+            const existing = document.querySelector('.error-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'error-toast fixed bottom-6 left-1/2 -translate-x-1/2 z-50 ' +
+                'bg-red-900/90 text-red-200 px-6 py-4 rounded-2xl border border-red-500/30 ' +
+                'shadow-lg backdrop-blur-sm max-w-lg text-center';
+            toast.innerHTML = `
+                <p class="font-semibold mb-1">❌ Analysefehler</p>
+                <p class="text-sm text-red-300">${message}</p>
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.5s';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+
+        // ─── Initialisierung ───
+        document.addEventListener('DOMContentLoaded', loadCoins);
+    </script>
+</body>
+</html>

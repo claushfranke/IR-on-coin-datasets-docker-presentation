@@ -1,0 +1,90 @@
+[
+    {
+        "id": "coin_01",
+        "name": "CN Typ 513",
+        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
+        "mint": "Maroneia",
+        "region": "Thrakien",
+        "dating": "ca. 500–480 v. Chr.",
+        "nominal": "Drachme, AR",
+        "obverse": "images/coin_01/obverse.jpg",
+        "reverse": "images/coin_01/reverse.jpg"
+    },
+    {
+        "id": "coin_02",
+        "name": "CN Typ 8862",
+        "description": "Kopf des Philetairos mit Efeukranz / Athena thronend mit Kranz",
+        "mint": "Pergamon",
+        "region": "Mysien",
+        "dating": "ca. 241–197 v. Chr.",
+        "nominal": "Tetradrachme, AR",
+        "obverse": "images/coin_02/obverse.jpg",
+        "reverse": "images/coin_02/reverse.jpg"
+    },
+    {
+        "id": "coin_03",
+        "name": "CN Münze 1775 (Typ 513)",
+        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
+        "mint": "Maroneia",
+        "region": "Thrakien",
+        "dating": "ca. 500–480 v. Chr.",
+        "nominal": "Drachme, AR, 15 mm, 3.50 g",
+        "obverse": "images/coin_03/obverse.jpg",
+        "reverse": "images/coin_03/reverse.jpg"
+    },
+    {
+        "id": "coin_04",
+        "name": "CN Typ 513 (Var. A)",
+        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
+        "mint": "Maroneia",
+        "region": "Thrakien",
+        "dating": "ca. 500–480 v. Chr.",
+        "nominal": "Drachme, AR",
+        "obverse": "images/coin_04/obverse.jpg",
+        "reverse": "images/coin_04/reverse.jpg"
+    },
+    {
+        "id": "coin_05",
+        "name": "CN Typ 8862 (Var. A)",
+        "description": "Kopf des Philetairos mit Efeukranz / Athena thronend mit Kranz",
+        "mint": "Pergamon",
+        "region": "Mysien",
+        "dating": "ca. 241–197 v. Chr.",
+        "nominal": "Tetradrachme, AR",
+        "obverse": "images/coin_05/obverse.jpg",
+        "reverse": "images/coin_05/reverse.jpg"
+    },
+    {
+        "id": "coin_06",
+        "name": "CN Münze 1775 (Var. A)",
+        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
+        "mint": "Maroneia",
+        "region": "Thrakien",
+        "dating": "ca. 500–480 v. Chr.",
+        "nominal": "Drachme, AR, 15 mm, 3.50 g",
+        "obverse": "images/coin_06/obverse.jpg",
+        "reverse": "images/coin_06/reverse.jpg"
+    },
+    {
+        "id": "coin_07",
+        "name": "CN Typ 513 (Var. B)",
+        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
+        "mint": "Maroneia",
+        "region": "Thrakien",
+        "dating": "ca. 500–480 v. Chr.",
+        "nominal": "Drachme, AR",
+        "obverse": "images/coin_07/obverse.jpg",
+        "reverse": "images/coin_07/reverse.jpg"
+    },
+    {
+        "id": "coin_08",
+        "name": "CN Typ 8862 (Var. B)",
+        "description": "Kopf des Philetairos mit Efeukranz / Athena thronend mit Kranz",
+        "mint": "Pergamon",
+        "region": "Mysien",
+        "dating": "ca. 241–197 v. Chr.",
+        "nominal": "Tetradrachme, AR",
+        "obverse": "images/coin_08/obverse.jpg",
+        "reverse": "images/coin_08/reverse.jpg"
+    }
+]

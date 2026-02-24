@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  # ─────────────────────────────────────────
+  # Backend: FastAPI + TensorFlow
+  # ─────────────────────────────────────────
+  backend:
+    build: ./backend
+    container_name: coin-analysis-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Münzbilder aus dem Frontend (read-only)
+      - ./frontend/images:/app/images:ro
+      # Persistenter Modell-Speicher
+      - model-data:/app/models
+    environment:
+      - MODELS_DIR=/app/models
+      - IMAGES_DIR=/app/images
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    # Bei TF + Modell-Download braucht der erste Start etwas
+    # Der Healthcheck hat 120s start-period im Dockerfile
+
+  # ─────────────────────────────────────────
+  # Frontend: Statischer Webserver (Nginx)
+  # ─────────────────────────────────────────
+  frontend:
+    image: nginx:alpine
+    container_name: coin-analysis-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  model-data:
+    name: coin-analysis-models
