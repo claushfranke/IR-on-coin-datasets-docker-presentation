@@ -95,6 +95,7 @@ class PredictionItem(BaseModel):
     cn_link: str
     display_label: str
     type_images: list[TypeImageSet] | None = None
+    typology_texts: dict | None = None
 
 
 class AnalyzeResponse(BaseModel):

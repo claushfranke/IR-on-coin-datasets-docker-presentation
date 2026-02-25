@@ -109,18 +109,23 @@ def translate(top5_indices: list, mode: str) -> list:
 # Münzstätten-Typologie-Lookup
 # ─────────────────────────────────────────────
 
-_typology_map: dict = {}  # normalisierter Name → Typologie-URL
+_TYPOLOGY_TEXT_FIELDS = (
+    "de_topography", "de_research", "de_typology", "de_metrology",
+    "de_chronology", "de_special", "de_classic", "de_hellenistic", "de_imperial",
+)
+
+_typology_data: dict = {}  # normalisierter Name → {"url": str, "texts": dict}
 
 
-def fetch_typology_map() -> dict:
+def fetch_typology_data() -> dict:
     """
     Lädt alle Münzstätten-Typologien von der CN-API und erstellt
-    ein Lookup-Dictionary: normalisierter Münzstättenname → API-URL.
+    ein Lookup-Dictionary mit URL und deutschen Texten.
     Ergebnis wird gecacht.
     """
-    global _typology_map
-    if _typology_map:
-        return _typology_map
+    global _typology_data
+    if _typology_data:
+        return _typology_data
 
     try:
         resp = requests.get(
@@ -137,16 +142,28 @@ def fetch_typology_map() -> dict:
             if not entry_id:
                 continue
             url = f"https://www.corpus-nummorum.eu/resources/typology/{entry_id}"
+            texts = {
+                k: entry[k] for k in _TYPOLOGY_TEXT_FIELDS
+                if entry.get(k)
+            }
+            record = {"url": url, "texts": texts}
             for label_key in ("de_label", "en_label"):
                 label_val = entry.get(label_key)
                 if label_val:
-                    _typology_map[label_val.strip().lower()] = url
+                    _typology_data[label_val.strip().lower()] = record
 
-        logger.info(f"Typologie-Lookup geladen: {len(_typology_map)} Einträge")
+        logger.info(f"Typologie-Daten geladen: {len(_typology_data)} Einträge")
     except Exception as e:
         logger.warning(f"Typologie-API Abruf fehlgeschlagen: {e}")
 
-    return _typology_map
+    return _typology_data
+
+
+def fetch_mint_typology_texts(label) -> dict | None:
+    """Gibt die deutschen Typologietexte für eine Münzstätte zurück."""
+    data = fetch_typology_data()
+    entry = data.get(str(label).strip().lower())
+    return entry["texts"] if entry else None
 
 
 def build_cn_link(label, mode: str) -> str:
@@ -155,10 +172,10 @@ def build_cn_link(label, mode: str) -> str:
         return f"https://www.corpus-nummorum.eu/types/{label}"
     else:
         # Suche Typologie-Seite für die Münzstätte
-        tmap = fetch_typology_map()
-        typology_url = tmap.get(str(label).strip().lower())
-        if typology_url:
-            return typology_url
+        tdata = fetch_typology_data()
+        entry = tdata.get(str(label).strip().lower())
+        if entry:
+            return entry["url"]
         # Fallback: Suche über Quicksearch
         query = str(label).replace(" ", "+")
         return f"https://www.corpus-nummorum.eu/search/types?type=quicksearch&q={query}"
@@ -263,6 +280,10 @@ def run_analysis(coin_id: str, mode: str) -> dict:
         if mode == "types":
             type_images = fetch_type_images(label)
             pred_item["type_images"] = type_images
+
+        # Bei Münzstätten-Vorhersagen: Typologietexte laden
+        if mode == "mints":
+            pred_item["typology_texts"] = fetch_mint_typology_texts(label)
 
         predictions.append(pred_item)
 

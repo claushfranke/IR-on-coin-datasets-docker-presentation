@@ -110,6 +110,50 @@
             transition: width 0.8s ease-out;
         }
 
+        /* Typologie-Akkordeon */
+        .typo-section {
+            border: 1px solid rgba(200,169,81,0.15);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .typo-section summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 0.6rem 1rem;
+            background: rgba(255,255,255,0.04);
+            color: rgba(200,169,81,0.85);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .typo-section summary:hover { background: rgba(255,255,255,0.08); }
+        .typo-section summary::-webkit-details-marker { display: none; }
+        .typo-section summary::after {
+            content: '▼';
+            font-size: 0.65rem;
+            color: rgba(200,169,81,0.4);
+            transition: transform 0.25s;
+        }
+        .typo-section[open] summary::after { transform: rotate(180deg); }
+        .typo-content {
+            padding: 0.75rem 1rem;
+            color: #cbd5e1;
+            font-size: 0.82rem;
+            line-height: 1.65;
+            max-height: 18rem;
+            overflow-y: auto;
+        }
+        .typo-footnote {
+            color: #64748b;
+            font-size: 0.72rem;
+        }
+
         /* Fade-In Animation */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -432,6 +476,19 @@
             }
         }
 
+        // ─── Typologie-Felder Münzstätten ───
+        const TYPOLOGY_LABELS = {
+            de_topography:  'Topographie',
+            de_research:    'Forschungsgeschichte',
+            de_typology:    'Typologie',
+            de_metrology:   'Metrologie',
+            de_chronology:  'Chronologie',
+            de_special:     'Besonderheiten',
+            de_classic:     'Klassische Zeit',
+            de_hellenistic: 'Hellenismus',
+            de_imperial:    'Kaiserzeit',
+        };
+
         // ─── Konfidenz-Formatierung ───
         function formatConfidence(pct) {
             if (pct >= 99.99995) return '> 99,9999 %';
@@ -501,6 +558,31 @@
                     `;
                 }
 
+                // Typologietexte für Münzstätten
+                let typologyHtml = '';
+                if (mode === 'mints' && pred.typology_texts && Object.keys(pred.typology_texts).length > 0) {
+                    const sections = Object.entries(TYPOLOGY_LABELS)
+                        .filter(([key]) => pred.typology_texts[key])
+                        .map(([key, label]) => {
+                            const isOpen = key === 'de_topography' ? 'open' : '';
+                            const text = pred.typology_texts[key]
+                                .replace(/\n/g, '<br>')
+                                .replace(/\{([^}]*)\}/g, '<span class="typo-footnote">[$1]</span>');
+                            return `<details ${isOpen} class="typo-section">
+                                <summary>${label}</summary>
+                                <div class="typo-content">${text}</div>
+                            </details>`;
+                        }).join('');
+                    typologyHtml = `
+                        <div class="mt-3 pt-3 border-t border-white/5">
+                            <p class="text-gold/50 text-xs uppercase tracking-wide mb-2">Typologische Informationen</p>
+                            <div class="space-y-1">
+                                ${sections}
+                            </div>
+                        </div>
+                    `;
+                }
+
                 return `
                 <div class="fade-in-up fade-in-up-delay-${i + 1}
                             bg-museum-card/60 rounded-2xl border border-gold/20 p-5
@@ -539,6 +621,7 @@
                     </div>
 
                     ${typeImagesHtml}
+                    ${typologyHtml}
                 </div>
             `;
             }).join('');
