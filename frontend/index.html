@@ -61,11 +61,38 @@
             transform: scale(0.97);
         }
 
-        /* Loading spinner – rotierende Münze */
+        /* Loading spinner – rotierende Münze mit Vorder-/Rückseite */
         @keyframes coinFlip {
             0% { transform: rotateY(0deg); }
             50% { transform: rotateY(180deg); }
             100% { transform: rotateY(360deg); }
+        }
+        .coin-flip-container {
+            perspective: 800px;
+        }
+        .coin-flip {
+            animation: coinFlip 2s ease-in-out infinite;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        .coin-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(160, 126, 59, 0.6);
+        }
+        .coin-obverse {
+            background: radial-gradient(circle at 40% 35%, #f0d78c 0%, #C8A951 40%, #A07E3B 100%);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.15), 0 8px 32px rgba(200,169,81,0.3);
+        }
+        .coin-reverse {
+            background: radial-gradient(circle at 60% 65%, #f0d78c 0%, #C8A951 40%, #A07E3B 100%);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.15), 0 8px 32px rgba(200,169,81,0.3);
+            transform: rotateY(180deg);
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
@@ -108,7 +135,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- APP CONTAINER                               -->
     <!-- ═══════════════════════════════════════════ -->
-    <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+    <div id="app" style="width:95%; max-width:100%; margin:0 auto;" class="px-2 py-6 sm:py-10">
 
         <!-- ─── SCREEN 1: GALERIE ─── -->
         <div id="screen-gallery">
@@ -124,7 +151,7 @@
             </div>
 
             <!-- Münz-Raster -->
-            <div id="coin-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div id="coin-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Wird per JS gefüllt -->
             </div>
         </div>
@@ -187,13 +214,17 @@
             <div class="fixed inset-0 z-50 flex items-center justify-center"
                  style="background: rgba(26, 26, 46, 0.92); backdrop-filter: blur(8px);">
                 <div class="text-center">
-                    <!-- Rotierende Münze -->
-                    <div class="mb-8" style="perspective: 600px;">
-                        <div class="coin-flip inline-block w-32 h-32 sm:w-40 sm:h-40 rounded-full
-                                    bg-gradient-to-br from-gold via-gold-light to-gold-dark
-                                    shadow-2xl shadow-gold/30 flex items-center justify-center"
-                             style="transform-style: preserve-3d;">
-                            <span class="text-5xl sm:text-6xl" style="backface-visibility: hidden;">🪙</span>
+                    <!-- Rotierende Münze mit Vorder-/Rückseite -->
+                    <div class="mb-8 coin-flip-container inline-block">
+                        <div class="coin-flip w-36 h-36 sm:w-44 sm:h-44" style="position:relative;">
+                            <!-- Vorderseite: Eule -->
+                            <div class="coin-face coin-obverse">
+                                <span class="text-7xl sm:text-8xl" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🦉</span>
+                            </div>
+                            <!-- Rückseite: Tempel -->
+                            <div class="coin-face coin-reverse">
+                                <span class="text-7xl sm:text-8xl" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🏛️</span>
+                            </div>
                         </div>
                     </div>
                     <h3 class="font-display text-2xl sm:text-3xl text-gold pulse-text mb-3">
@@ -314,8 +345,8 @@
             grid.innerHTML = coins.map((coin, i) => `
                 <div class="coin-card cursor-pointer bg-museum-card/60 rounded-2xl border border-white/10
                             p-4 backdrop-blur-sm" onclick="selectCoin(${i})"
-                     role="button" tabindex="0" aria-label="Münze ${coin.name} auswählen">
-                    <div class="flex gap-3 mb-3">
+                     role="button" tabindex="0" aria-label="Münze ${i + 1} auswählen">
+                    <div class="flex gap-2 mb-3">
                         <img src="${coin.obverse}" alt="Vorderseite"
                              class="w-1/2 aspect-square object-cover rounded-xl border border-gold/20"
                              loading="lazy">
@@ -323,13 +354,9 @@
                              class="w-1/2 aspect-square object-cover rounded-xl border border-gold/20"
                              loading="lazy">
                     </div>
-                    <h3 class="font-display text-gold text-base sm:text-lg font-semibold mb-1 truncate">
-                        ${coin.name}
+                    <h3 class="font-display text-gold text-base sm:text-lg font-semibold text-center">
+                        Münze ${i + 1}
                     </h3>
-                    <p class="text-slate-400 text-xs sm:text-sm leading-relaxed line-clamp-2">
-                        ${coin.description || ''}
-                    </p>
-                    ${coin.mint ? `<p class="text-gold/50 text-xs mt-2">${coin.mint} · ${coin.region || ''}</p>` : ''}
                 </div>
             `).join('');
         }
@@ -353,10 +380,13 @@
         }
 
         // ─── Analyse starten ───
+        const MIN_LOADING_MS = 2500; // Mindestzeit für Lade-Animation
+
         async function startAnalysis(mode) {
             if (!selectedCoin) return;
 
             showScreen('screen-loading');
+            const loadStart = Date.now();
 
             try {
                 const resp = await fetch(`${API_BASE}/api/analyze`, {
@@ -374,6 +404,13 @@
                 }
 
                 const data = await resp.json();
+
+                // Mindestzeit abwarten, damit die Animation nicht abgehackt wirkt
+                const elapsed = Date.now() - loadStart;
+                if (elapsed < MIN_LOADING_MS) {
+                    await new Promise(r => setTimeout(r, MIN_LOADING_MS - elapsed));
+                }
+
                 displayResults(data, mode);
 
             } catch (e) {
@@ -386,7 +423,7 @@
         // ─── Ergebnis anzeigen ───
         function displayResults(data, mode) {
             const modeLabel = mode === 'types' ? 'Typ' : 'Münzstätte';
-            document.getElementById('result-title').textContent = `🎯 Ergebnis – ${modeLabel}`;
+            document.getElementById('result-title').textContent = `Ergebnis – ${modeLabel}`;
 
             // Bilder setzen
             document.getElementById('result-combined').src = `data:image/png;base64,${data.combined_image}`;
@@ -396,7 +433,37 @@
             const container = document.getElementById('result-predictions');
             const medals = ['🥇', '🥈', '🥉', '4.', '5.'];
 
-            container.innerHTML = data.predictions.map((pred, i) => `
+            container.innerHTML = data.predictions.map((pred, i) => {
+                // Typ-Bilder HTML erzeugen (nur bei Types-Modus)
+                let typeImagesHtml = '';
+                if (pred.type_images && pred.type_images.length > 0) {
+                    const imgPairs = pred.type_images.map(imgSet => `
+                        <div class="flex gap-2">
+                            <div class="text-center">
+                                <img src="${imgSet.obverse_url}" alt="Avers"
+                                     class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-gold/20"
+                                     loading="lazy">
+                                <p class="text-gold/50 text-xs mt-1">Avers</p>
+                            </div>
+                            <div class="text-center">
+                                <img src="${imgSet.reverse_url}" alt="Revers"
+                                     class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-gold/20"
+                                     loading="lazy">
+                                <p class="text-gold/50 text-xs mt-1">Revers</p>
+                            </div>
+                        </div>
+                    `).join('');
+                    typeImagesHtml = `
+                        <div class="mt-3 pt-3 border-t border-white/5">
+                            <p class="text-gold/50 text-xs uppercase tracking-wide mb-2">Münzen dieses Typs</p>
+                            <div class="flex flex-wrap gap-3">
+                                ${imgPairs}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                return `
                 <div class="fade-in-up fade-in-up-delay-${i + 1}
                             bg-museum-card/60 rounded-2xl border border-gold/20 p-5
                             hover:border-gold/40 transition-colors">
@@ -442,8 +509,11 @@
                         </svg>
                         Auf Corpus Nummorum ansehen
                     </a>
+
+                    ${typeImagesHtml}
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             showScreen('screen-results');
 

@@ -10,6 +10,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
+import requests
+
 from utils import (
     IMAGE_SIZE,
     TEMP_DIR,
@@ -112,6 +114,44 @@ def build_cn_link(label, mode: str) -> str:
         return f"https://www.corpus-nummorum.eu/search/types?type=quicksearch&q={query}"
 
 
+def fetch_type_images(type_id) -> list:
+    """
+    Holt Beispielbilder eines Typs von der CN-API.
+    Gibt eine Liste von Imagesets zurück: [{obverse_url, reverse_url}, ...]
+    """
+    try:
+        resp = requests.get(
+            f"https://data.corpus-nummorum.eu/api/types/{type_id}",
+            timeout=10,
+        )
+        if resp.status_code != 200:
+            logger.warning(f"CN-API Fehler für Typ {type_id}: HTTP {resp.status_code}")
+            return []
+
+        data = resp.json()
+        contents = data.get("contents", [])
+        if not contents:
+            return []
+
+        images = contents[0].get("images", [])
+        result = []
+        for img_set in images[:3]:  # Maximal 3 Imagesets
+            obv = img_set.get("obverse", {})
+            rev = img_set.get("reverse", {})
+            obv_thumb = obv.get("thumbnail", {}).get("lg") or obv.get("link")
+            rev_thumb = rev.get("thumbnail", {}).get("lg") or rev.get("link")
+            if obv_thumb and rev_thumb:
+                result.append({
+                    "obverse_url": obv_thumb,
+                    "reverse_url": rev_thumb,
+                })
+        return result
+
+    except Exception as e:
+        logger.warning(f"CN-API Abruf fehlgeschlagen für Typ {type_id}: {e}")
+        return []
+
+
 def run_analysis(coin_id: str, mode: str) -> dict:
     """
     Führt die komplette Analyse für eine Münze durch.
@@ -145,9 +185,12 @@ def run_analysis(coin_id: str, mode: str) -> dict:
     indices, probs = top_5(preds)
     labels = translate(indices, mode)
 
-    # GradCAM erzeugen
+    # Softmax-Aktivierung entfernen für saubere GradCAM-Gradienten
+    # (wie im Original-Notebook: model.layers[-1].activation = None)
     model.layers[-1].activation = None
-    heatmap = make_gradcam_heatmap(img_array, model)
+
+    # GradCAM erzeugen (top-1 Klasse)
+    heatmap = make_gradcam_heatmap(img_array, model, pred_index=int(indices[0]))
     gradcam_img = create_gradcam_overlay(combined_path, heatmap)
 
     # Kombiniertes Bild laden
@@ -156,14 +199,22 @@ def run_analysis(coin_id: str, mode: str) -> dict:
     # Ergebnisse formatieren
     predictions = []
     for rank, (label, prob) in enumerate(zip(labels, probs), 1):
-        prob_pct = prob * 100 if prob < 1 else prob
-        predictions.append({
+        # Softmax-Output ist immer in [0, 1] → immer mit 100 multiplizieren
+        prob_pct = prob * 100
+        pred_item = {
             "rank": rank,
             "label": str(label),
             "confidence": round(float(prob_pct), 2),
             "cn_link": build_cn_link(label, mode),
             "display_label": f"Typ {label}" if mode == "types" else str(label),
-        })
+        }
+
+        # Bei Typ-Vorhersagen: Beispielbilder des Typs von der CN-API laden
+        if mode == "types":
+            type_images = fetch_type_images(label)
+            pred_item["type_images"] = type_images
+
+        predictions.append(pred_item)
 
     return {
         "predictions": predictions,

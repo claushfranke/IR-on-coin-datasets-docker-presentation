@@ -83,12 +83,18 @@ class AnalyzeRequest(BaseModel):
     )
 
 
+class TypeImageSet(BaseModel):
+    obverse_url: str
+    reverse_url: str
+
+
 class PredictionItem(BaseModel):
     rank: int
     label: str
     confidence: float
     cn_link: str
     display_label: str
+    type_images: list[TypeImageSet] | None = None
 
 
 class AnalyzeResponse(BaseModel):
