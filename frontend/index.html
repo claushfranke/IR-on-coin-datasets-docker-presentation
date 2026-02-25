@@ -172,7 +172,15 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1a1a2e; }
         ::-webkit-scrollbar-thumb { background: #C8A951; border-radius: 4px; }
+
+        /* Leaflet Karte – dunkles Overlay für Museum-Optik */
+        .mint-map { filter: brightness(0.85) saturate(0.9); }
+        .leaflet-container { background: #1a1a2e; }
     </style>
+
+    <!-- Leaflet.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body class="text-slate-200 overflow-x-hidden">
 
@@ -351,6 +359,11 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Originalmünze Info-Kasten -->
+                    <div id="real-coin-info" class="hidden bg-museum-card/60 rounded-2xl border border-gold/30 p-5">
+                        <!-- Wird per JS befüllt -->
+                    </div>
                 </div>
 
                 <!-- Rechte Spalte: Top-5 Ergebnisse -->
@@ -489,6 +502,84 @@
             de_imperial:    'Kaiserzeit',
         };
 
+        // ─── Originalmünze Info-Kasten ───
+        function renderRealCoinInfo(coin) {
+            const box = document.getElementById('real-coin-info');
+            if (!coin || !coin.cn_id) { box.classList.add('hidden'); return; }
+
+            const t = coin.type || {};
+            const m = coin.mint || {};
+            const r = coin.region || {};
+            const d = coin.date || {};
+            const p = d.period || {};
+            const obv = coin.obverse_info || {};
+            const rev = coin.reverse_info || {};
+            const den = coin.denomination || {};
+            const mat = coin.material || {};
+
+            const metrology = [
+                den.name ? `<span class="font-medium text-white">${den.name}</span>` : null,
+                mat.name ? mat.name : null,
+                coin.diameter_mm ? `${coin.diameter_mm} mm` : null,
+                coin.weight_g ? `${coin.weight_g} g` : null,
+                coin.axis != null ? `Stempelstellung: ${coin.axis}°` : null,
+            ].filter(Boolean);
+
+            box.innerHTML = `
+                <div class="flex items-start justify-between gap-4 mb-4">
+                    <h3 class="font-display text-lg text-gold leading-tight">
+                        Diese Münze im Corpus Nummorum
+                    </h3>
+                    <div class="flex-shrink-0 flex flex-col items-center gap-1">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(coin.cn_link)}&bgcolor=16213e&color=C8A951&format=png&qzone=1"
+                             alt="QR-Code zum CN-Eintrag"
+                             class="w-20 h-20 rounded-lg border border-gold/30"
+                             loading="lazy">
+                        <p class="text-slate-500 text-xs text-center leading-snug">CN Nr. ${coin.cn_id}</p>
+                    </div>
+                </div>
+
+                <dl class="space-y-2 text-sm">
+                    <div class="flex gap-2">
+                        <dt class="w-28 flex-shrink-0 text-slate-400">Typ</dt>
+                        <dd class="text-slate-200">CN Typ ${t.id || '–'}</dd>
+                    </div>
+                    <div class="flex gap-2">
+                        <dt class="w-28 flex-shrink-0 text-slate-400">Münzstätte</dt>
+                        <dd class="text-slate-200">${m.name || '–'}${r.name ? `<span class="text-slate-400 ml-2">· ${r.name}</span>` : ''}</dd>
+                    </div>
+                    <div class="flex gap-2">
+                        <dt class="w-28 flex-shrink-0 text-slate-400">Datierung</dt>
+                        <dd class="text-slate-200">${d.text || '–'}${p.name ? `<span class="text-slate-400 ml-2">· ${p.name}</span>` : ''}</dd>
+                    </div>
+                </dl>
+
+                <div class="mt-4 pt-3 border-t border-white/5 space-y-3 text-sm">
+                    ${obv.description ? `
+                    <div>
+                        <p class="text-gold/50 text-xs uppercase tracking-wide mb-1">Vorderseite</p>
+                        <p class="text-slate-200">${obv.description}</p>
+                        ${obv.legend ? `<p class="text-slate-400 text-xs mt-0.5">Legende: ${obv.legend}</p>` : ''}
+                    </div>` : ''}
+                    ${rev.description ? `
+                    <div>
+                        <p class="text-gold/50 text-xs uppercase tracking-wide mb-1">Rückseite</p>
+                        <p class="text-slate-200">${rev.description}</p>
+                        ${rev.legend ? `<p class="text-slate-400 text-xs mt-0.5">Legende: ${rev.legend}</p>` : ''}
+                    </div>` : ''}
+                </div>
+
+                ${metrology.length ? `
+                <div class="mt-4 pt-3 border-t border-white/5">
+                    <p class="text-gold/50 text-xs uppercase tracking-wide mb-2">Metrologie</p>
+                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-300">
+                        ${metrology.map(v => `<span>${v}</span>`).join('')}
+                    </div>
+                </div>` : ''}
+            `;
+            box.classList.remove('hidden');
+        }
+
         // ─── Konfidenz-Formatierung ───
         function formatConfidence(pct) {
             if (pct >= 99.99995) return '> 99,9999 %';
@@ -551,11 +642,26 @@
                         </div>
                     `;
                 } else {
-                    typeImagesHtml = `
-                        <div class="flex items-center gap-4 mt-3">
-                            ${qrCodeHtml}
-                        </div>
-                    `;
+                    if (mode === 'mints' && pred.mint_coordinates) {
+                        const mapId = `mint-map-${pred.rank}`;
+                        typeImagesHtml = `
+                            <div class="mt-3 pt-3 border-t border-white/5 flex items-start gap-3">
+                                <div id="${mapId}"
+                                     class="mint-map flex-1 rounded-lg border border-gold/20 overflow-hidden"
+                                     style="height: 200px; min-width: 0;"
+                                     data-lat="${pred.mint_coordinates.lat}"
+                                     data-lon="${pred.mint_coordinates.lon}">
+                                </div>
+                                ${qrCodeHtml}
+                            </div>
+                        `;
+                    } else {
+                        typeImagesHtml = `
+                            <div class="flex items-center gap-4 mt-3">
+                                ${qrCodeHtml}
+                            </div>
+                        `;
+                    }
                 }
 
                 // Typologietexte für Münzstätten
@@ -627,6 +733,7 @@
             }).join('');
 
             showScreen('screen-results');
+            renderRealCoinInfo(selectedCoin);
 
             // Konfidenz-Balken animieren
             requestAnimationFrame(() => {
@@ -635,6 +742,41 @@
                         bar.style.width = bar.dataset.width;
                     });
                 }, 100);
+
+                // Leaflet-Karten initialisieren (Münzstätten-Modus)
+                setTimeout(() => {
+                    container.querySelectorAll('[id^="mint-map-"]').forEach(el => {
+                        if (el.dataset.mapInit) return;
+                        el.dataset.mapInit = '1';
+
+                        const lat = parseFloat(el.dataset.lat);
+                        const lon = parseFloat(el.dataset.lon);
+                        if (isNaN(lat) || isNaN(lon)) return;
+
+                        const map = L.map(el.id, {
+                            zoomControl: true,
+                            attributionControl: false,
+                            scrollWheelZoom: false,
+                        }).setView([lat, lon], 6);
+
+                        L.tileLayer('https://dh.gu.se/tiles/imperium/{z}/{x}/{y}.png', {
+                            maxZoom: 12,
+                            attribution: 'Map: <a href="https://dh.gu.se/dare/" target="_blank">DARE</a> (CC BY 4.0)',
+                        }).addTo(map);
+
+                        // Goldener Marker
+                        const goldIcon = L.divIcon({
+                            className: '',
+                            html: '<div style="width:16px;height:16px;background:#C8A951;border:2px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(200,169,81,0.9);"></div>',
+                            iconSize: [16, 16],
+                            iconAnchor: [8, 8],
+                        });
+                        L.marker([lat, lon], { icon: goldIcon }).addTo(map);
+
+                        // Größe neu berechnen damit Tiles korrekt gerendert werden
+                        map.invalidateSize();
+                    });
+                }, 300);
             });
         }
 

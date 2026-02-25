@@ -88,6 +88,12 @@ class TypeImageSet(BaseModel):
     reverse_url: str
 
 
+class MintCoordinates(BaseModel):
+    lat: float
+    lon: float
+    region_de: str | None = None
+
+
 class PredictionItem(BaseModel):
     rank: int
     label: str
@@ -96,6 +102,7 @@ class PredictionItem(BaseModel):
     display_label: str
     type_images: list[TypeImageSet] | None = None
     typology_texts: dict | None = None
+    mint_coordinates: MintCoordinates | None = None
 
 
 class AnalyzeResponse(BaseModel):

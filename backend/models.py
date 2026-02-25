@@ -114,7 +114,8 @@ _TYPOLOGY_TEXT_FIELDS = (
     "de_chronology", "de_special", "de_classic", "de_hellenistic", "de_imperial",
 )
 
-_typology_data: dict = {}  # normalisierter Name → {"url": str, "texts": dict}
+_typology_data: dict = {}  # normalisierter Name → {"url": str, "texts": dict, "nomisma_concated": str}
+_mint_coords_cache: dict = {}  # nomisma-ID → {"lat": float, "lon": float, "region_de": str|None}
 
 
 def fetch_typology_data() -> dict:
@@ -146,7 +147,7 @@ def fetch_typology_data() -> dict:
                 k: entry[k] for k in _TYPOLOGY_TEXT_FIELDS
                 if entry.get(k)
             }
-            record = {"url": url, "texts": texts}
+            record = {"url": url, "texts": texts, "nomisma_concated": entry.get("nomisma_concated")}
             for label_key in ("de_label", "en_label"):
                 label_val = entry.get(label_key)
                 if label_val:
@@ -157,6 +158,95 @@ def fetch_typology_data() -> dict:
         logger.warning(f"Typologie-API Abruf fehlgeschlagen: {e}")
 
     return _typology_data
+
+
+def fetch_all_mints() -> dict:
+    """
+    Lädt alle Münzstätten von der CN-API und erstellt ein
+    Lookup-Dictionary nach normalisiertem Namen mit Koordinaten.
+    Ergebnis wird gecacht.
+    """
+    global _mint_coords_cache
+    if _mint_coords_cache:
+        return _mint_coords_cache
+
+    try:
+        resp = requests.get(
+            "https://data.corpus-nummorum.eu/api/mints",
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            logger.warning(f"Mints-API Fehler: HTTP {resp.status_code}")
+            return {}
+
+        data = resp.json()
+        for entry in data.get("contents", []):
+            lat = entry.get("latitude")
+            lon = entry.get("longitude")
+            if not (lat and lon):
+                continue
+            try:
+                coords = {
+                    "lat": float(lat),
+                    "lon": float(lon),
+                    "region_de": entry.get("region_de"),
+                }
+            except (ValueError, TypeError):
+                continue
+
+            # Mehrere Namens-Keys eintragen für besseres Matching
+            for key in ("name", "name_de", "name_en"):
+                val = entry.get(key)
+                if val:
+                    _mint_coords_cache[val.strip().lower()] = coords
+
+        logger.info(f"Münzstätten-Koordinaten geladen: {len(_mint_coords_cache)} Einträge")
+    except Exception as e:
+        logger.warning(f"Mints-API Abruf fehlgeschlagen: {e}")
+
+    return _mint_coords_cache
+
+
+def fetch_mint_coordinates(label) -> dict | None:
+    """
+    Gibt Koordinaten für eine Münzstätte zurück.
+    Sucht direkt im Mints-API-Cache nach dem Label-Namen.
+    Fallback: Verknüpfung über Typologie-Daten und nomisma-ID.
+    """
+    mint_coords = fetch_all_mints()
+    key = str(label).strip().lower()
+
+    # Direktes Namens-Matching
+    if key in mint_coords:
+        return mint_coords[key]
+
+    # Fallback: über Typologie-Daten mit nomisma_concated
+    tdata = fetch_typology_data()
+    entry = tdata.get(key)
+    if entry:
+        nomisma = entry.get("nomisma_concated")
+        if nomisma:
+            # Suche nach nomisma-ID in den gecachten Mint-Namen
+            # (Re-scan nötig, da Cache nach Namen nicht nach nomisma indiziert ist)
+            try:
+                resp = requests.get(
+                    "https://data.corpus-nummorum.eu/api/mints",
+                    timeout=15,
+                )
+                if resp.status_code == 200:
+                    for m in resp.json().get("contents", []):
+                        if m.get("nomisma") == nomisma:
+                            lat, lon = m.get("latitude"), m.get("longitude")
+                            if lat and lon:
+                                return {
+                                    "lat": float(lat),
+                                    "lon": float(lon),
+                                    "region_de": m.get("region_de"),
+                                }
+            except Exception:
+                pass
+
+    return None
 
 
 def fetch_mint_typology_texts(label) -> dict | None:
@@ -281,9 +371,10 @@ def run_analysis(coin_id: str, mode: str) -> dict:
             type_images = fetch_type_images(label)
             pred_item["type_images"] = type_images
 
-        # Bei Münzstätten-Vorhersagen: Typologietexte laden
+        # Bei Münzstätten-Vorhersagen: Typologietexte und Koordinaten laden
         if mode == "mints":
             pred_item["typology_texts"] = fetch_mint_typology_texts(label)
+            pred_item["mint_coordinates"] = fetch_mint_coordinates(label)
 
         predictions.append(pred_item)
 

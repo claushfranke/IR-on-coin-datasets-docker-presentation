@@ -1,90 +1,310 @@
 [
-    {
-        "id": "coin_01",
-        "name": "CN Typ 513",
-        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
-        "mint": "Maroneia",
-        "region": "Thrakien",
-        "dating": "ca. 500–480 v. Chr.",
-        "nominal": "Drachme, AR",
-        "obverse": "images/coin_01/obverse.jpg",
-        "reverse": "images/coin_01/reverse.jpg"
+  {
+    "id": "coin_01",
+    "obverse": "images/coin_01/obverse.jpg",
+    "reverse": "images/coin_01/reverse.jpg",
+    "cn_id": 19530,
+    "cn_link": "https://www.corpus-nummorum.eu/coins/19530",
+    "type": {
+      "id": 20809,
+      "cn_link": "https://www.corpus-nummorum.eu/types/20809"
     },
-    {
-        "id": "coin_02",
-        "name": "CN Typ 8862",
-        "description": "Kopf des Philetairos mit Efeukranz / Athena thronend mit Kranz",
-        "mint": "Pergamon",
-        "region": "Mysien",
-        "dating": "ca. 241–197 v. Chr.",
-        "nominal": "Tetradrachme, AR",
-        "obverse": "images/coin_02/obverse.jpg",
-        "reverse": "images/coin_02/reverse.jpg"
+    "mint": {
+      "name": "Thasos",
+      "cn_link": "https://www.corpus-nummorum.eu/search/types?type=advanced&mint=49"
     },
-    {
-        "id": "coin_03",
-        "name": "CN Münze 1775 (Typ 513)",
-        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
-        "mint": "Maroneia",
-        "region": "Thrakien",
-        "dating": "ca. 500–480 v. Chr.",
-        "nominal": "Drachme, AR, 15 mm, 3.50 g",
-        "obverse": "images/coin_03/obverse.jpg",
-        "reverse": "images/coin_03/reverse.jpg"
+    "region": {
+      "name": "Thrakien"
     },
-    {
-        "id": "coin_04",
-        "name": "CN Typ 513 (Var. A)",
-        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
-        "mint": "Maroneia",
-        "region": "Thrakien",
-        "dating": "ca. 500–480 v. Chr.",
-        "nominal": "Drachme, AR",
-        "obverse": "images/coin_04/obverse.jpg",
-        "reverse": "images/coin_04/reverse.jpg"
+    "date": {
+      "text": "ca. 430-404 v. Chr.",
+      "period": {
+        "name": "Klassik",
+        "nomisma_link": "http://nomisma.org/id/classical_greece"
+      }
     },
-    {
-        "id": "coin_05",
-        "name": "CN Typ 8862 (Var. A)",
-        "description": "Kopf des Philetairos mit Efeukranz / Athena thronend mit Kranz",
-        "mint": "Pergamon",
-        "region": "Mysien",
-        "dating": "ca. 241–197 v. Chr.",
-        "nominal": "Tetradrachme, AR",
-        "obverse": "images/coin_05/obverse.jpg",
-        "reverse": "images/coin_05/reverse.jpg"
+    "obverse_info": {
+      "description": "Nackter Silen nach rechts schreitend, eine Nymphe entführend.",
+      "legend": "Α"
     },
-    {
-        "id": "coin_06",
-        "name": "CN Münze 1775 (Var. A)",
-        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
-        "mint": "Maroneia",
-        "region": "Thrakien",
-        "dating": "ca. 500–480 v. Chr.",
-        "nominal": "Drachme, AR, 15 mm, 3.50 g",
-        "obverse": "images/coin_06/obverse.jpg",
-        "reverse": "images/coin_06/reverse.jpg"
+    "reverse_info": {
+      "description": "Quadratum incusum in Form von vier Windmühlenflügeln.",
+      "legend": null
     },
-    {
-        "id": "coin_07",
-        "name": "CN Typ 513 (Var. B)",
-        "description": "Protome eines springenden Pferdes / Sternblume im quadratum incusum",
-        "mint": "Maroneia",
-        "region": "Thrakien",
-        "dating": "ca. 500–480 v. Chr.",
-        "nominal": "Drachme, AR",
-        "obverse": "images/coin_07/obverse.jpg",
-        "reverse": "images/coin_07/reverse.jpg"
+    "denomination": {
+      "name": "Stater",
+      "nomisma_link": "http://nomisma.org/id/stater"
     },
-    {
-        "id": "coin_08",
-        "name": "CN Typ 8862 (Var. B)",
-        "description": "Kopf des Philetairos mit Efeukranz / Athena thronend mit Kranz",
-        "mint": "Pergamon",
-        "region": "Mysien",
-        "dating": "ca. 241–197 v. Chr.",
-        "nominal": "Tetradrachme, AR",
-        "obverse": "images/coin_08/obverse.jpg",
-        "reverse": "images/coin_08/reverse.jpg"
-    }
+    "material": {
+      "name": "Silber",
+      "nomisma_link": "http://nomisma.org/id/ar"
+    },
+    "diameter_mm": 22,
+    "weight_g": 8.87,
+    "axis": null
+  },
+  {
+    "id": "coin_02",
+    "obverse": "images/coin_02/obverse.jpg",
+    "reverse": "images/coin_02/reverse.jpg",
+    "cn_id": 65449,
+    "cn_link": "https://www.corpus-nummorum.eu/coins/65449",
+    "type": {
+      "id": 2253,
+      "cn_link": "https://www.corpus-nummorum.eu/types/2253"
+    },
+    "mint": {
+      "name": "Maroneia",
+      "cn_link": "https://www.corpus-nummorum.eu/search/types?type=advanced&mint=24"
+    },
+    "region": {
+      "name": "Thrakien"
+    },
+    "date": {
+      "text": "ca. 189/88-49/45 v. Chr.",
+      "period": {
+        "name": "Hellenismus",
+        "nomisma_link": "http://nomisma.org/id/hellenistic_greece"
+      }
+    },
+    "obverse_info": {
+      "description": "Kopf des (jugendlichen) Dionysos nach rechts mit Efeukranz, Stirnband und langen Locken.",
+      "legend": null
+    },
+    "reverse_info": {
+      "description": "Nackter Dionysos nach links mit Weintraube und zwei Speeren.",
+      "legend": "ΔΙΟΝΥΣΟΥ ΣΩΤΗΡΟΣ ΜΑΡΩΝΙΤΩΝ"
+    },
+    "denomination": {
+      "name": "Tetradrachme",
+      "nomisma_link": "http://nomisma.org/id/tetradrachm"
+    },
+    "material": {
+      "name": "Silber",
+      "nomisma_link": "http://nomisma.org/id/ar"
+    },
+    "diameter_mm": 33,
+    "weight_g": 15.82,
+    "axis": null
+  },
+  {
+    "id": "coin_03",
+    "obverse": "images/coin_03/obverse.jpg",
+    "reverse": "images/coin_03/reverse.jpg",
+    "cn_id": 29146,
+    "cn_link": "https://www.corpus-nummorum.eu/coins/29146",
+    "type": {
+      "id": 7138,
+      "cn_link": "https://www.corpus-nummorum.eu/types/7138"
+    },
+    "mint": {
+      "name": "Istros",
+      "cn_link": "https://www.corpus-nummorum.eu/search/types?type=advanced&mint=82"
+    },
+    "region": {
+      "name": "Moesia inferior"
+    },
+    "date": {
+      "text": "ca. 375-360/350 v. Chr.",
+      "period": {
+        "name": "Klassik",
+        "nomisma_link": "http://nomisma.org/id/classical_greece"
+      }
+    },
+    "obverse_info": {
+      "description": "Zwei Jünglingsköpfe von vorn, der eine umgekehrt.",
+      "legend": null
+    },
+    "reverse_info": {
+      "description": "Seeadler auf Delphin nach links; im vertieften Kreis.",
+      "legend": "ΙΣΤΡΙΗ"
+    },
+    "denomination": {
+      "name": "Didrachme",
+      "nomisma_link": "http://nomisma.org/id/didrachm"
+    },
+    "material": {
+      "name": "Silber",
+      "nomisma_link": "http://nomisma.org/id/ar"
+    },
+    "diameter_mm": 20,
+    "weight_g": 6.73,
+    "axis": null
+  },
+  {
+    "id": "coin_04",
+    "obverse": "images/coin_04/obverse.jpg",
+    "reverse": "images/coin_04/reverse.jpg",
+    "cn_id": 18066,
+    "cn_link": "https://www.corpus-nummorum.eu/coins/18066",
+    "type": {
+      "id": 11882,
+      "cn_link": "https://www.corpus-nummorum.eu/types/11882"
+    },
+    "mint": {
+      "name": "Pergamon",
+      "cn_link": "https://www.corpus-nummorum.eu/search/types?type=advanced&mint=74"
+    },
+    "region": {
+      "name": "Mysien"
+    },
+    "date": {
+      "text": "ca. 133-90 v. Chr.",
+      "period": {
+        "name": "Hellenismus",
+        "nomisma_link": "http://nomisma.org/id/hellenistic_greece"
+      }
+    },
+    "obverse_info": {
+      "description": "Brustbild der Athena nach rechts mit korinthischem Helm und Gewand.",
+      "legend": null
+    },
+    "reverse_info": {
+      "description": "Eule von vorn im Lorbeerkranz.",
+      "legend": "ΑΘΗΝΑΣ ΝΙΚΗΦΟΡΟΥ"
+    },
+    "denomination": {
+      "name": null,
+      "nomisma_link": null
+    },
+    "material": {
+      "name": "Bronze",
+      "nomisma_link": "http://nomisma.org/id/ae"
+    },
+    "diameter_mm": 15,
+    "weight_g": 1.98,
+    "axis": 12
+  },
+  {
+    "id": "coin_05",
+    "obverse": "images/coin_05/obverse.jpg",
+    "reverse": "images/coin_05/reverse.jpg",
+    "cn_id": 30758,
+    "cn_link": "https://www.corpus-nummorum.eu/coins/30758",
+    "type": {
+      "id": 20104,
+      "cn_link": "https://www.corpus-nummorum.eu/types/20104"
+    },
+    "mint": {
+      "name": "Byzantion",
+      "cn_link": "https://www.corpus-nummorum.eu/search/types?type=advanced&mint=9"
+    },
+    "region": {
+      "name": "Thrakien"
+    },
+    "date": {
+      "text": "ca. 175-150 v. Chr.",
+      "period": {
+        "name": "Hellenismus",
+        "nomisma_link": "http://nomisma.org/id/hellenistic_greece"
+      }
+    },
+    "obverse_info": {
+      "description": "Kopf des vergöttlichten Alexander des Großen nach rechts mit Diadem und Ammonshorn.",
+      "legend": null
+    },
+    "reverse_info": {
+      "description": "Athena (Nikephoros) nach links thronend mit Nike und Speer; Schild hinten.",
+      "legend": "ΒΑΣΙΛΕΩΣ ΛΥΣΙΜΑΧΟΥ"
+    },
+    "denomination": {
+      "name": "Tetradrachme",
+      "nomisma_link": "http://nomisma.org/id/tetradrachm"
+    },
+    "material": {
+      "name": "Silber",
+      "nomisma_link": "http://nomisma.org/id/ar"
+    },
+    "diameter_mm": 36,
+    "weight_g": 16.71,
+    "axis": 11
+  },
+  {
+    "id": "coin_06",
+    "obverse": "images/coin_06/obverse.jpg",
+    "reverse": "images/coin_06/reverse.jpg",
+    "cn_id": 4593,
+    "cn_link": "https://www.corpus-nummorum.eu/coins/4593",
+    "type": {
+      "id": 2820,
+      "cn_link": "https://www.corpus-nummorum.eu/types/2820"
+    },
+    "mint": {
+      "name": "Ainos",
+      "cn_link": "https://www.corpus-nummorum.eu/search/types?type=advanced&mint=10"
+    },
+    "region": {
+      "name": "Thrakien"
+    },
+    "date": {
+      "text": "ca. 408/407-407/406 v. Chr.",
+      "period": {
+        "name": "Klassik",
+        "nomisma_link": "http://nomisma.org/id/classical_greece"
+      }
+    },
+    "obverse_info": {
+      "description": "Kopf des Hermes nach rechts, Petasos mit punktiertem Rand und Knopf tragend.",
+      "legend": null
+    },
+    "reverse_info": {
+      "description": "Ziegenbock nach rechts stehend; rechts unter dem erhobenen Rechten Vorderhuf, Krebs; im quadratum incusum.",
+      "legend": "ΑΙΝΙ"
+    },
+    "denomination": {
+      "name": "Tetrobol (Hemisiglos)",
+      "nomisma_link": "http://nomisma.org/id/tetrobol"
+    },
+    "material": {
+      "name": "Silber",
+      "nomisma_link": "http://nomisma.org/id/ar"
+    },
+    "diameter_mm": 13,
+    "weight_g": 2.74,
+    "axis": 6
+  },
+  {
+    "id": "coin_07",
+    "obverse": "images/coin_07/obverse.jpg",
+    "reverse": "images/coin_07/reverse.jpg",
+    "cn_id": 3047,
+    "cn_link": "https://www.corpus-nummorum.eu/coins/3047",
+    "type": {
+      "id": 2879,
+      "cn_link": "https://www.corpus-nummorum.eu/types/2879"
+    },
+    "mint": {
+      "name": "Perinthos",
+      "cn_link": "https://www.corpus-nummorum.eu/search/types?type=advanced&mint=28"
+    },
+    "region": {
+      "name": "Thrakien"
+    },
+    "date": {
+      "text": "218-222 n. Chr",
+      "period": {
+        "name": "Römische Kaiserzeit",
+        "nomisma_link": null
+      }
+    },
+    "obverse_info": {
+      "description": "Brustbild des Elagabal nach rechts mit Lorbeerkranz, Panzer und Paludamentum. Perlkreis.",
+      "legend": "ΑVΤ Κ Μ ΑVΡΗ - ΑΝΤΩΝΕΙΝΟϹ *ΑVΓ*"
+    },
+    "reverse_info": {
+      "description": "Preistisch mit Löwenfüßen nach links, darauf zwei Preiskronen mit je einem Palmzweig; zwischen den Preiskronen Geldbörse; darunter fünf Äpfel und Amphora.",
+      "legend": "ΠΕΡΙΝΘΙΩΝ ΔΙϹ ΝΕΩΚΟΡΩ-Ν / i.f. ΠVΘΙΑ // ΑΚΤΙΑ"
+    },
+    "denomination": {
+      "name": "Vierer",
+      "nomisma_link": "http://nomisma.org/id/4-unit"
+    },
+    "material": {
+      "name": "Bronze",
+      "nomisma_link": "http://nomisma.org/id/ae"
+    },
+    "diameter_mm": 30,
+    "weight_g": 13.74,
+    "axis": 1
+  }
 ]
