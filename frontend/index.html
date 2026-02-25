@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Corpus Nummorum – Münzerkennung</title>
+    <title>CN – Münzerkennung</title>
 
     <!-- TailwindCSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -133,6 +133,29 @@
 <body class="text-slate-200 overflow-x-hidden">
 
     <!-- ═══════════════════════════════════════════ -->
+    <!-- HEADER-TITELBAND                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <header class="sticky top-0 z-[60] border-b border-gold/20 cursor-pointer"
+            onclick="showGallery()"
+            title="Zur Startseite"
+            style="background: linear-gradient(180deg, rgba(16,33,62,0.98) 0%, rgba(26,26,46,0.95) 100%);
+                   backdrop-filter: blur(12px);">
+        <div class="flex items-center justify-center gap-4 sm:gap-6 px-4 py-3 sm:py-4 max-w-7xl mx-auto">
+            <img src="https://www.imagines-nummorum.eu/images/logo-imagnum.svg"
+                 alt="Imagines Nummorum Logo"
+                 class="h-10 sm:h-12 lg:h-14 flex-shrink-0">
+            <div class="text-center sm:text-left">
+                <h1 class="font-display text-lg sm:text-xl lg:text-2xl font-bold text-gold leading-tight">
+                    CN Münzbilderkennung
+                </h1>
+                <p class="text-slate-400 text-xs sm:text-sm hidden sm:block">
+                    Automatische Typ- &amp; Prägestättenbestimmung antiker Münzen
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!-- APP CONTAINER                               -->
     <!-- ═══════════════════════════════════════════ -->
     <div id="app" style="width:95%; max-width:100%; margin:0 auto;" class="px-2 py-6 sm:py-10">
@@ -141,10 +164,10 @@
         <div id="screen-gallery">
             <!-- Header -->
             <div class="text-center mb-8 sm:mb-12">
-                <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-gold mb-4"
+                <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-gold mb-4"
                     style="text-shadow: 2px 2px 12px rgba(0,0,0,0.5);">
                     🪙 Bestimmen Sie eine Münze
-                </h1>
+                </h2>
                 <p class="text-slate-400 text-base sm:text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed">
                     Bitte wählen Sie eine Münze aus, um ihre Münzstätte bzw. ihren Typ zu bestimmen.
                 </p>
@@ -188,9 +211,6 @@
                     <p class="text-gold/80 text-sm mt-2 font-medium">Rückseite (Revers)</p>
                 </div>
             </div>
-
-            <!-- Münz-Info -->
-            <div id="selected-info" class="text-center text-slate-400 mb-10"></div>
 
             <!-- Analyse-Buttons -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 max-w-xl mx-auto">
@@ -269,7 +289,7 @@
                 <div class="space-y-6 fade-in-up fade-in-up-delay-1">
                     <!-- GradCAM -->
                     <div class="bg-museum-card/60 rounded-2xl border border-gold/20 p-5">
-                        <h3 class="font-display text-lg text-gold mb-3">🔬 Modell-Aufmerksamkeit (GradCAM)</h3>
+                        <h3 class="font-display text-lg text-gold mb-3">Modell-Aufmerksamkeit (GradCAM)</h3>
                         <p class="text-slate-400 text-sm mb-4">
                             Die Heatmap zeigt, welche Bildbereiche für die Vorhersage besonders wichtig waren.
                             Warme Farben (gelb/rot) = hohe Aufmerksamkeit.
@@ -368,14 +388,6 @@
             document.getElementById('selected-obverse').src = selectedCoin.obverse;
             document.getElementById('selected-reverse').src = selectedCoin.reverse;
 
-            const infoEl = document.getElementById('selected-info');
-            const parts = [selectedCoin.name];
-            if (selectedCoin.mint) parts.push(selectedCoin.mint);
-            if (selectedCoin.region) parts.push(selectedCoin.region);
-            if (selectedCoin.dating) parts.push(selectedCoin.dating);
-            if (selectedCoin.nominal) parts.push(selectedCoin.nominal);
-            infoEl.innerHTML = `<p class="text-base">${parts.join(' · ')}</p>`;
-
             showScreen('screen-selected');
         }
 
@@ -420,6 +432,14 @@
             }
         }
 
+        // ─── Konfidenz-Formatierung ───
+        function formatConfidence(pct) {
+            if (pct >= 99.99995) return '> 99,9999 %';
+            const formatted = pct.toFixed(4);
+            if (formatted === '0.0000') return '< 0,0001 %';
+            return formatted.replace('.', ',') + ' %';
+        }
+
         // ─── Ergebnis anzeigen ───
         function displayResults(data, mode) {
             const modeLabel = mode === 'types' ? 'Typ' : 'Münzstätte';
@@ -434,7 +454,16 @@
             const medals = ['🥇', '🥈', '🥉', '4.', '5.'];
 
             container.innerHTML = data.predictions.map((pred, i) => {
-                // Typ-Bilder HTML erzeugen (nur bei Types-Modus)
+                // QR-Code und Typ-Bilder HTML erzeugen
+                const qrCodeHtml = `
+                    <div class="flex-shrink-0 flex flex-col items-center gap-1">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(pred.cn_link)}&bgcolor=16213e&color=C8A951&format=png&qzone=1"
+                             alt="QR-Code zum Corpus-Nummorum-Eintrag"
+                             class="w-20 h-20 rounded-lg border border-gold/30"
+                             loading="lazy">
+                        <p class="text-slate-500 text-xs leading-snug text-center">QR-Code scannen<br>zum CN-Eintrag</p>
+                    </div>
+                `;
                 let typeImagesHtml = '';
                 if (pred.type_images && pred.type_images.length > 0) {
                     const imgPairs = pred.type_images.map(imgSet => `
@@ -454,11 +483,20 @@
                         </div>
                     `).join('');
                     typeImagesHtml = `
-                        <div class="mt-3 pt-3 border-t border-white/5">
-                            <p class="text-gold/50 text-xs uppercase tracking-wide mb-2">Münzen dieses Typs</p>
-                            <div class="flex flex-wrap gap-3">
-                                ${imgPairs}
+                        <div class="mt-3 pt-3 border-t border-white/5 flex items-start gap-4">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-gold/50 text-xs uppercase tracking-wide mb-2">Münzen dieses Typs</p>
+                                <div class="flex flex-wrap gap-3">
+                                    ${imgPairs}
+                                </div>
                             </div>
+                            ${qrCodeHtml}
+                        </div>
+                    `;
+                } else {
+                    typeImagesHtml = `
+                        <div class="flex items-center gap-4 mt-3">
+                            ${qrCodeHtml}
                         </div>
                     `;
                 }
@@ -487,8 +525,8 @@
                         </div>
                         <!-- Prozent -->
                         <div class="flex-shrink-0 text-right">
-                            <span class="text-2xl font-bold ${i === 0 ? 'text-gold' : 'text-gold/70'}">
-                                ${pred.confidence.toFixed(1)}%
+                            <span class="text-xl font-bold ${i === 0 ? 'text-gold' : 'text-gold/70'}">
+                                ${formatConfidence(pred.confidence)}
                             </span>
                         </div>
                     </div>
@@ -499,16 +537,6 @@
                              style="width: 0%" data-width="${Math.min(pred.confidence, 100)}%">
                         </div>
                     </div>
-
-                    <!-- CN-Link -->
-                    <a href="${pred.cn_link}" target="_blank" rel="noopener noreferrer"
-                       class="inline-flex items-center gap-1.5 text-gold/70 hover:text-gold text-sm transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                        </svg>
-                        Auf Corpus Nummorum ansehen
-                    </a>
 
                     ${typeImagesHtml}
                 </div>

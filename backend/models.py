@@ -105,11 +105,61 @@ def translate(top5_indices: list, mode: str) -> list:
     return [d[k] for k in top5_indices]
 
 
+# ─────────────────────────────────────────────
+# Münzstätten-Typologie-Lookup
+# ─────────────────────────────────────────────
+
+_typology_map: dict = {}  # normalisierter Name → Typologie-URL
+
+
+def fetch_typology_map() -> dict:
+    """
+    Lädt alle Münzstätten-Typologien von der CN-API und erstellt
+    ein Lookup-Dictionary: normalisierter Münzstättenname → API-URL.
+    Ergebnis wird gecacht.
+    """
+    global _typology_map
+    if _typology_map:
+        return _typology_map
+
+    try:
+        resp = requests.get(
+            "https://data.corpus-nummorum.eu/api/typology",
+            timeout=10,
+        )
+        if resp.status_code != 200:
+            logger.warning(f"Typologie-API Fehler: HTTP {resp.status_code}")
+            return {}
+
+        data = resp.json()
+        for entry in data.get("contents", []):
+            entry_id = entry.get("id")
+            if not entry_id:
+                continue
+            url = f"https://www.corpus-nummorum.eu/resources/typology/{entry_id}"
+            for label_key in ("de_label", "en_label"):
+                label_val = entry.get(label_key)
+                if label_val:
+                    _typology_map[label_val.strip().lower()] = url
+
+        logger.info(f"Typologie-Lookup geladen: {len(_typology_map)} Einträge")
+    except Exception as e:
+        logger.warning(f"Typologie-API Abruf fehlgeschlagen: {e}")
+
+    return _typology_map
+
+
 def build_cn_link(label, mode: str) -> str:
     """Erstellt einen Link zu Corpus Nummorum für das gegebene Label."""
     if mode == "types":
         return f"https://www.corpus-nummorum.eu/types/{label}"
     else:
+        # Suche Typologie-Seite für die Münzstätte
+        tmap = fetch_typology_map()
+        typology_url = tmap.get(str(label).strip().lower())
+        if typology_url:
+            return typology_url
+        # Fallback: Suche über Quicksearch
         query = str(label).replace(" ", "+")
         return f"https://www.corpus-nummorum.eu/search/types?type=quicksearch&q={query}"
 
@@ -204,7 +254,7 @@ def run_analysis(coin_id: str, mode: str) -> dict:
         pred_item = {
             "rank": rank,
             "label": str(label),
-            "confidence": round(float(prob_pct), 2),
+            "confidence": float(prob_pct),
             "cn_link": build_cn_link(label, mode),
             "display_label": f"Typ {label}" if mode == "types" else str(label),
         }
