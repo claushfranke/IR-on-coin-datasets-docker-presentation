@@ -1,5 +1,5 @@
 """
-🪙 Münz-Analyse Backend – FastAPI
+Münz-Analyse Backend – FastAPI
 REST-API zur Typ- und Prägestätten-Erkennung antiker Münzen.
 """
 
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Beim Start Modelle herunterladen und laden."""
-    logger.info("🪙 Münz-Analyse Backend startet...")
+    logger.info("Münz-Analyse Backend startet...")
 
     # Modelle herunterladen falls nötig
     if not ensure_models():
