@@ -101,6 +101,7 @@ class PredictionItem(BaseModel):
     cn_link: str
     display_label: str
     type_images: list[TypeImageSet] | None = None
+    type_info: dict | None = None
     typology_texts: dict | None = None
     mint_coordinates: MintCoordinates | None = None
 

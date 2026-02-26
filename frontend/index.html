@@ -154,6 +154,36 @@
             font-size: 0.72rem;
         }
 
+        /* Typ-Info-Sektion (kollabierbar) */
+        .type-info-section {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .type-info-section summary {
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: rgba(200,169,81,0.55);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .type-info-section summary:hover { color: rgba(200,169,81,0.9); }
+        .type-info-section summary::-webkit-details-marker { display: none; }
+        .type-info-section summary::before {
+            content: '▶';
+            font-size: 0.55rem;
+            color: rgba(200,169,81,0.35);
+            transition: transform 0.25s;
+        }
+        .type-info-section[open] summary::before { transform: rotate(90deg); }
+
         /* Fade-In Animation */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -449,7 +479,7 @@
         }
 
         // ─── Analyse starten ───
-        const MIN_LOADING_MS = 2500; // Mindestzeit für Lade-Animation
+        const MIN_LOADING_MS = 3000; // Mindestzeit für Lade-Animation
 
         async function startAnalysis(mode) {
             if (!selectedCoin) return;
@@ -502,6 +532,67 @@
             de_imperial:    'Kaiserzeit',
         };
 
+        // ─── Typ-Info-Kasten (kollabierbar) ───
+        function buildTypeInfoHtml(info) {
+            if (!info) return '';
+
+            const metrology = [
+                info.denomination ? `<span class="font-medium text-white">${info.denomination}</span>` : null,
+                info.material     ? info.material : null,
+                info.diameter_mm  ? `${info.diameter_mm} mm` : null,
+                info.weight_g     ? `${info.weight_g} g` : null,
+            ].filter(Boolean);
+
+            const dlRows = [
+                info.mint ? `
+                <div class="flex gap-2">
+                    <dt class="w-28 flex-shrink-0 text-slate-400">Münzstätte</dt>
+                    <dd class="text-slate-200">${info.mint}${
+                        info.region ? `<span class="text-slate-400 ml-2">· ${info.region}</span>` : ''
+                    }</dd>
+                </div>` : '',
+                info.date ? `
+                <div class="flex gap-2">
+                    <dt class="w-28 flex-shrink-0 text-slate-400">Datierung</dt>
+                    <dd class="text-slate-200">${info.date}${
+                        info.period ? `<span class="text-slate-400 ml-2">· ${info.period}</span>` : ''
+                    }</dd>
+                </div>` : '',
+            ].filter(Boolean);
+
+            return `
+            <details class="type-info-section">
+                <summary>Informationen über diesen Typ</summary>
+                <div class="mt-3 space-y-3 text-sm">
+                    ${dlRows.length ? `<dl class="space-y-2">${dlRows.join('')}</dl>` : ''}
+
+                    ${(info.obverse_desc || info.reverse_desc) ? `
+                    <div class="pt-2 border-t border-white/5 space-y-3">
+                        ${info.obverse_desc ? `
+                        <div>
+                            <p class="text-gold/50 text-xs uppercase tracking-wide mb-1">Vorderseite</p>
+                            <p class="text-slate-200">${info.obverse_desc}</p>
+                            ${info.obverse_legend ? `<p class="text-slate-400 text-xs mt-0.5">Legende: ${info.obverse_legend}</p>` : ''}
+                        </div>` : ''}
+                        ${info.reverse_desc ? `
+                        <div>
+                            <p class="text-gold/50 text-xs uppercase tracking-wide mb-1">Rückseite</p>
+                            <p class="text-slate-200">${info.reverse_desc}</p>
+                            ${info.reverse_legend ? `<p class="text-slate-400 text-xs mt-0.5">Legende: ${info.reverse_legend}</p>` : ''}
+                        </div>` : ''}
+                    </div>` : ''}
+
+                    ${metrology.length ? `
+                    <div class="pt-2 border-t border-white/5">
+                        <p class="text-gold/50 text-xs uppercase tracking-wide mb-2">Metrologie</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-300">
+                            ${metrology.map(v => `<span>${v}</span>`).join('')}
+                        </div>
+                    </div>` : ''}
+                </div>
+            </details>`;
+        }
+
         // ─── Originalmünze Info-Kasten ───
         function renderRealCoinInfo(coin) {
             const box = document.getElementById('real-coin-info');
@@ -528,7 +619,7 @@
             box.innerHTML = `
                 <div class="flex items-start justify-between gap-4 mb-4">
                     <h3 class="font-display text-lg text-gold leading-tight">
-                        Diese Münze im Corpus Nummorum
+                        Dieser Münztyp im Corpus Nummorum
                     </h3>
                     <div class="flex-shrink-0 flex flex-col items-center gap-1">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(coin.cn_link)}&bgcolor=16213e&color=C8A951&format=png&qzone=1"
@@ -612,6 +703,9 @@
                         <p class="text-slate-500 text-xs leading-snug text-center">QR-Code scannen<br>zum CN-Eintrag</p>
                     </div>
                 `;
+                const typeInfoHtml = (mode === 'types' && pred.type_info)
+                    ? buildTypeInfoHtml(pred.type_info) : '';
+
                 let typeImagesHtml = '';
                 if (pred.type_images && pred.type_images.length > 0) {
                     const imgPairs = pred.type_images.map(imgSet => `
@@ -727,6 +821,7 @@
                     </div>
 
                     ${typeImagesHtml}
+                    ${typeInfoHtml}
                     ${typologyHtml}
                 </div>
             `;

@@ -271,11 +271,34 @@ def build_cn_link(label, mode: str) -> str:
         return f"https://www.corpus-nummorum.eu/search/types?type=quicksearch&q={query}"
 
 
-def fetch_type_images(type_id) -> list:
+def _ml(obj) -> str | None:
+    """Extrahiert einen deutschen (oder englischen) Namen aus einem mehrsprachigen Feld."""
+    if obj is None:
+        return None
+    if isinstance(obj, str):
+        return obj or None
+    if isinstance(obj, dict):
+        # Direkt name/de/en-Felder
+        for key in ("de", "en"):
+            if obj.get(key):
+                return obj[key]
+        # Verschachteltes name-Objekt
+        name = obj.get("name")
+        if isinstance(name, dict):
+            return name.get("de") or name.get("en")
+        if isinstance(name, str):
+            return name
+    return None
+
+
+def fetch_type_data(type_id) -> dict:
     """
-    Holt Beispielbilder eines Typs von der CN-API.
-    Gibt eine Liste von Imagesets zurück: [{obverse_url, reverse_url}, ...]
+    Holt Beispielbilder UND Metadaten eines Typs von der CN-API in einem Aufruf.
+    Gibt {"images": [...], "info": {...}} zurück.
+    Bilder und Info werden unabhängig voneinander behandelt, damit ein Fehler
+    bei den Metadaten nicht die Bilder-Anzeige kaputt macht.
     """
+    result = {"images": [], "info": None}
     try:
         resp = requests.get(
             f"https://data.corpus-nummorum.eu/api/types/{type_id}",
@@ -283,30 +306,99 @@ def fetch_type_images(type_id) -> list:
         )
         if resp.status_code != 200:
             logger.warning(f"CN-API Fehler für Typ {type_id}: HTTP {resp.status_code}")
-            return []
+            return result
 
         data = resp.json()
         contents = data.get("contents", [])
         if not contents:
-            return []
+            return result
 
-        images = contents[0].get("images", [])
-        result = []
-        for img_set in images[:3]:  # Maximal 3 Imagesets
-            obv = img_set.get("obverse", {})
-            rev = img_set.get("reverse", {})
-            obv_thumb = obv.get("thumbnail", {}).get("lg") or obv.get("link")
-            rev_thumb = rev.get("thumbnail", {}).get("lg") or rev.get("link")
-            if obv_thumb and rev_thumb:
-                result.append({
-                    "obverse_url": obv_thumb,
-                    "reverse_url": rev_thumb,
-                })
+        c = contents[0]
+
+        # ── Bilder (eigener try/except) ──────────────────────────────
+        try:
+            images = []
+            for img_set in (c.get("images") or [])[:3]:
+                obv = img_set.get("obverse") or {}
+                rev = img_set.get("reverse") or {}
+                obv_thumb = (obv.get("thumbnail") or {}).get("lg") or obv.get("link")
+                rev_thumb = (rev.get("thumbnail") or {}).get("lg") or rev.get("link")
+                if obv_thumb and rev_thumb:
+                    images.append({"obverse_url": obv_thumb, "reverse_url": rev_thumb})
+            result["images"] = images
+        except Exception as e:
+            logger.warning(f"Bilder-Extraktion fehlgeschlagen für Typ {type_id}: {e}")
+
+        # ── Metadaten (eigener try/except) ───────────────────────────
+        try:
+            # Münzstätte  →  mint.text.{de|en}
+            mint_obj   = c.get("mint") or {}
+            mint_name  = _ml(mint_obj.get("text"))
+
+            # Region  →  mint.region.text.{de|en}
+            region_obj  = (mint_obj.get("region") or {})
+            region_name = _ml(region_obj.get("text"))
+
+            # Datierung  →  date.text.{de|en}
+            date_obj  = c.get("date") or {}
+            date_text = _ml(date_obj.get("text"))
+
+            # Epoche / Periode  →  date.period.text.{de|en}
+            period_obj  = (date_obj.get("period") or {})
+            period_name = _ml(period_obj.get("text"))
+
+            # Denomination  →  denomination.text.{de|en}
+            den_obj  = c.get("denomination") or {}
+            den_name = _ml(den_obj.get("text"))
+
+            # Material  →  material.text.{de|en}
+            mat_obj  = c.get("material") or {}
+            mat_name = _ml(mat_obj.get("text"))
+
+            # Vorderseite  →  obverse.design.text.{de|en}  /  obverse.legend.string
+            obv_obj    = c.get("obverse") or {}
+            obv_design = (obv_obj.get("design") or {})
+            obv_desc   = _ml(obv_design.get("text"))
+            obv_legend_obj = obv_obj.get("legend") or {}
+            obv_legend = obv_legend_obj.get("string") if isinstance(obv_legend_obj, dict) else None
+
+            # Rückseite  →  reverse.design.text.{de|en}  /  reverse.legend.string
+            rev_obj    = c.get("reverse") or {}
+            rev_design = (rev_obj.get("design") or {})
+            rev_desc   = _ml(rev_design.get("text"))
+            rev_legend_obj = rev_obj.get("legend") or {}
+            rev_legend = rev_legend_obj.get("string") if isinstance(rev_legend_obj, dict) else None
+
+            # Metrologie  →  diameter.value_max  /  weight.value
+            diam_obj = c.get("diameter") or {}
+            wgt_obj  = c.get("weight")   or {}
+            diameter = diam_obj.get("value_max") or diam_obj.get("value_min") or diam_obj.get("value")
+            weight   = wgt_obj.get("value")
+
+            info = {
+                "mint":           mint_name,
+                "region":         region_name,
+                "date":           date_text,
+                "period":         period_name,
+                "denomination":   den_name,
+                "material":       mat_name,
+                "obverse_desc":   obv_desc,
+                "obverse_legend": obv_legend,
+                "reverse_desc":   rev_desc,
+                "reverse_legend": rev_legend,
+                "diameter_mm":    float(diameter) if diameter is not None else None,
+                "weight_g":       float(weight)   if weight   is not None else None,
+            }
+            if any(v is not None for v in info.values()):
+                result["info"] = info
+        except Exception as e:
+            logger.warning(f"Metadaten-Extraktion fehlgeschlagen für Typ {type_id}: {e}")
+
         return result
 
     except Exception as e:
         logger.warning(f"CN-API Abruf fehlgeschlagen für Typ {type_id}: {e}")
-        return []
+        return result
 
 
 def run_analysis(coin_id: str, mode: str) -> dict:
@@ -366,10 +458,11 @@ def run_analysis(coin_id: str, mode: str) -> dict:
             "display_label": f"Typ {label}" if mode == "types" else str(label),
         }
 
-        # Bei Typ-Vorhersagen: Beispielbilder des Typs von der CN-API laden
+        # Bei Typ-Vorhersagen: Beispielbilder + Metadaten des Typs von der CN-API laden
         if mode == "types":
-            type_images = fetch_type_images(label)
-            pred_item["type_images"] = type_images
+            type_data = fetch_type_data(label)
+            pred_item["type_images"] = type_data["images"]
+            pred_item["type_info"]   = type_data["info"]
 
         # Bei Münzstätten-Vorhersagen: Typologietexte und Koordinaten laden
         if mode == "mints":
