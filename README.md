@@ -1,46 +1,76 @@
-# IR-on-coin-datasets
+# IR-on-coin-datasets — Interactive Presentation
 
-This is an Image Recognition approach on the Corpus Nummorum dataset. You can predict coin types and mints on coin images (obverse and reverse).
-If you have any problems or suggestions, please feel free to contact us.
+This is a Docker-based interactive presentation layer for the
+[IR-on-coin-datasets](https://github.com/Frankfurt-BigDataLab/IR-on-coin-datasets) project by the
+**Frankfurt Big Data Lab**. It lets museum visitors predict the **type** and **mint** of ancient
+coins from the [Corpus Nummorum](https://www.corpus-nummorum.eu/) using a trained image-recognition
+model.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Frankfurt-BigDataLab/IR-on-coin-datasets/blob/main/Colab/IR-for-types-and-mints.ipynb)
 
 ---
 
-## Lokale Ausführung mit Docker
+## Citation
 
-Die Anwendung besteht aus zwei Diensten:
+If you use this work, please cite the original repository:
 
-| Dienst | Beschreibung | Port |
-|--------|--------------|------|
-| **Backend** | FastAPI + TensorFlow (Bildanalyse-API) | `8000` |
-| **Frontend** | Nginx (statische Web-UI) | `3000` |
+```bibtex
+@misc{frankfurtbigdatalab2021coincognition,
+  author       = {{Frankfurt Big Data Lab}},
+  title        = {IR-on-coin-datasets: Image Recognition on the Corpus Nummorum Dataset},
+  year         = {2021},
+  howpublished = {\url{https://github.com/Frankfurt-BigDataLab/IR-on-coin-datasets}},
+  note         = {GitHub repository}
+}
+```
 
-### Ports konfigurieren
+> Original repository: <https://github.com/Frankfurt-BigDataLab/IR-on-coin-datasets>
 
-Die Standard-Ports lassen sich in der Datei `.env` im Projektverzeichnis anpassen:
+---
+
+## License
+
+Content is licensed under a
+[Creative Commons Attribution – NonCommercial – ShareAlike 3.0 Germany](http://creativecommons.org/licenses/by-nc-sa/3.0/de/)
+license (CC BY-NC-SA 3.0 DE).
+
+---
+
+## Running Locally with Docker
+
+The application consists of two services:
+
+| Service | Description | Port |
+|---------|-------------|------|
+| **Backend** | FastAPI + TensorFlow (image analysis API) | `8000` |
+| **Frontend** | Nginx (static web UI) | `3000` |
+
+### Configure Ports
+
+Default ports can be changed via an `.env` file in the project root:
 
 ```ini
 BACKEND_PORT=8000
 FRONTEND_PORT=3000
 ```
 
-Einfach den gewünschten Wert eintragen und die Container neu starten. Die `:-`-Syntax in der `docker-compose.yml` sorgt dafür, dass die Standardwerte greifen, falls die Variablen nicht gesetzt sind.
+Edit the values and restart the containers. The `:-` syntax in `docker-compose.yml` ensures
+default values are used if the variables are not set.
 
 ---
 
-### Voraussetzungen
+### Prerequisites
 
-Installiere **Docker Desktop** (enthält Docker Engine und Docker Compose):
+Install **Docker Desktop** (includes Docker Engine and Docker Compose):
 
 - **Windows**: [docs.docker.com/desktop/install/windows-install](https://docs.docker.com/desktop/install/windows-install/)  
-  > Empfohlen: WSL 2 als Backend aktivieren (wird vom Installer vorgeschlagen)
+  > Recommended: enable WSL 2 as the backend (suggested by the installer)
 - **macOS**: [docs.docker.com/desktop/install/mac-install](https://docs.docker.com/desktop/install/mac-install/)  
-  > Verfügbar für Intel (x86_64) und Apple Silicon (ARM64/M-Chips)
+  > Available for Intel (x86_64) and Apple Silicon (ARM64 / M-series chips)
 - **Linux**: [docs.docker.com/engine/install](https://docs.docker.com/engine/install/)  
-  > Docker Engine + das Compose-Plugin installieren; kein Docker Desktop erforderlich
+  > Install Docker Engine + the Compose plugin; Docker Desktop is not required
 
-Überprüfe die Installation:
+Verify the installation:
 
 ```bash
 docker --version
@@ -49,39 +79,39 @@ docker compose version
 
 ---
 
-### Anwendung starten
+### Starting the Application
 
-1. **Repository klonen (falls noch nicht geschehen)**
+1. **Clone the repository (if you haven't already)**
 
    ```bash
    git clone https://github.com/Frankfurt-BigDataLab/IR-on-coin-datasets.git
    cd IR-on-coin-datasets
    ```
 
-2. **Container bauen und starten**
+2. **Build and start the containers**
 
    ```bash
    docker compose up --build
    ```
 
-   > Beim **ersten Start** werden die KI-Modelle automatisch heruntergeladen (~1–2 GB).  
-   > Das Backend benötigt dafür bis zu **2 Minuten** – die Web-UI ist erst danach vollständig nutzbar.
+   > On the **first start** the AI models are downloaded automatically (~1–2 GB).  
+   > The backend needs up to **2 minutes** — the web UI is only fully usable after that.
 
-3. **Anwendung öffnen**
+3. **Open the application**
 
-   Öffne im Browser: [http://localhost:3000](http://localhost:3000)
+   Open in your browser: [http://localhost:3000](http://localhost:3000)
 
-   Die REST-API ist direkt erreichbar unter: [http://localhost:8000/docs](http://localhost:8000/docs)
+   The REST API is available at: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
-### Im Hintergrund starten (ohne Log-Ausgabe)
+### Running in the Background (detached mode)
 
 ```bash
 docker compose up -d --build
 ```
 
-Logs nachträglich anzeigen:
+View logs later:
 
 ```bash
 docker compose logs -f
@@ -89,50 +119,51 @@ docker compose logs -f
 
 ---
 
-### Anwendung stoppen
+### Stopping the Application
 
 ```bash
 docker compose down
 ```
 
-Zum vollständigen Entfernen **inklusive der heruntergeladenen Modelle** (Volume löschen):
+To fully remove everything **including the downloaded models** (delete volume):
 
 ```bash
 docker compose down -v
 ```
 
-> **Hinweis:** Nach `down -v` werden die Modelle beim nächsten Start erneut heruntergeladen.
+> **Note:** After `down -v` the models will be re-downloaded on the next start.
 
 ---
 
-### Hinweise für Windows
+### Notes for Windows
 
-- Alle Befehle funktionieren in **PowerShell**, der **Windows-Eingabeaufforderung (CMD)** und im **WSL 2 Terminal** gleichermaßen.
-- Stelle sicher, dass Docker Desktop läuft (Icon in der Taskleiste sichtbar), bevor du `docker compose` ausführst.
-- Bei Problemen mit Dateipfaden unter WSL 2: das Repository am besten direkt im Linux-Dateisystem (`~/projekte/...`) klonen, nicht auf dem Windows-Laufwerk (`/mnt/c/...`).
+- All commands work in **PowerShell**, the **Windows Command Prompt (CMD)**, and the **WSL 2 terminal**.
+- Make sure Docker Desktop is running (icon visible in the taskbar) before running `docker compose`.
+- If you have path issues under WSL 2: clone the repository directly into the Linux filesystem
+  (`~/projects/...`) rather than the Windows drive (`/mnt/c/...`).
 
-### Hinweise für macOS
+### Notes for macOS
 
-- Docker Desktop muss gestartet sein (Icon in der Menüleiste).
-- Auf **Apple Silicon (M1/M2/M3/M4)**: Das TensorFlow-Image wird automatisch für `linux/arm64` gebaut – dies ist vollständig unterstützt.
+- Docker Desktop must be running (icon in the menu bar).
+- On **Apple Silicon (M1/M2/M3/M4)**: the TensorFlow image is built automatically for `linux/arm64` — fully supported.
 
-### Hinweise für Linux
+### Notes for Linux
 
-- Füge deinen Benutzer zur `docker`-Gruppe hinzu, um `sudo` zu vermeiden:
+- Add your user to the `docker` group to avoid `sudo`:
   ```bash
   sudo usermod -aG docker $USER
-  # Danach neu einloggen oder: newgrp docker
+  # Then log out and back in, or run: newgrp docker
   ```
 
 ---
 
-### API-Gesundheitsstatus prüfen
+### Check API Health
 
 ```bash
 curl http://localhost:8000/api/health
 ```
 
-Erwartete Antwort (sobald Modelle geladen):
+Expected response (once the models are loaded):
 
 ```json
 {"status": "ok"}
