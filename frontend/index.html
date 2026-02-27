@@ -274,40 +274,73 @@
             </button>
 
             <!-- Überschrift -->
-            <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gold text-center mb-8">
+            <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gold text-center mb-6">
                 Was möchten Sie bei dieser Münze bestimmen?
             </h2>
 
-            <!-- Münzbilder groß -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 mb-10">
-                <div class="text-center">
-                    <img id="selected-obverse" src="" alt="Vorderseite"
-                         class="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 object-cover rounded-2xl
-                                border-2 border-gold/30 shadow-lg shadow-black/30">
-                    <p class="text-gold/80 text-sm mt-2 font-medium">Vorderseite (Avers)</p>
-                </div>
-                <div class="text-center">
-                    <img id="selected-reverse" src="" alt="Rückseite"
-                         class="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 object-cover rounded-2xl
-                                border-2 border-gold/30 shadow-lg shadow-black/30">
-                    <p class="text-gold/80 text-sm mt-2 font-medium">Rückseite (Revers)</p>
-                </div>
-            </div>
+            <!-- Zweispaltig: links Münzen + Buttons, rechts Erklärung -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-5xl mx-auto">
 
-            <!-- Analyse-Buttons -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 max-w-xl mx-auto">
-                <button onclick="startAnalysis('mints')"
-                        class="touch-btn w-full sm:w-auto px-10 py-5 rounded-2xl text-lg sm:text-xl font-bold
-                               bg-gradient-to-br from-gold to-gold-dark text-museum-bg
-                               shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]">
-                    🏛️ Münzstätte
-                </button>
-                <button onclick="startAnalysis('types')"
-                        class="touch-btn w-full sm:w-auto px-10 py-5 rounded-2xl text-lg sm:text-xl font-bold
-                               bg-gradient-to-br from-gold to-gold-dark text-museum-bg
-                               shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]">
-                    📜 Typ
-                </button>
+                <!-- Linke Spalte: Münzbilder + Buttons -->
+                <div class="flex flex-col items-center gap-6">
+
+                    <!-- Münzbilder -->
+                    <div class="flex flex-row items-end justify-center gap-6 sm:gap-10">
+                        <div class="text-center">
+                            <img id="selected-obverse" src="" alt="Vorderseite"
+                                 class="w-44 h-44 sm:w-52 sm:h-52 lg:w-60 lg:h-60 object-cover rounded-2xl
+                                        border-2 border-gold/30 shadow-lg shadow-black/30">
+                            <p class="text-gold/80 text-sm mt-2 font-medium">Vorderseite (Avers)</p>
+                        </div>
+                        <div class="text-center">
+                            <img id="selected-reverse" src="" alt="Rückseite"
+                                 class="w-44 h-44 sm:w-52 sm:h-52 lg:w-60 lg:h-60 object-cover rounded-2xl
+                                        border-2 border-gold/30 shadow-lg shadow-black/30">
+                            <p class="text-gold/80 text-sm mt-2 font-medium">Rückseite (Revers)</p>
+                        </div>
+                    </div>
+
+                    <!-- Analyse-Buttons -->
+                    <div class="flex flex-row gap-4 w-full justify-center">
+                        <button onclick="startAnalysis('mints')"
+                                class="touch-btn flex-1 max-w-xs px-6 py-5 rounded-2xl text-lg sm:text-xl font-bold
+                                       bg-gradient-to-br from-gold to-gold-dark text-museum-bg
+                                       shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]">
+                            🏛️ Münzstätte
+                        </button>
+                        <button onclick="startAnalysis('types')"
+                                class="touch-btn flex-1 max-w-xs px-6 py-5 rounded-2xl text-lg sm:text-xl font-bold
+                                       bg-gradient-to-br from-gold to-gold-dark text-museum-bg
+                                       shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]">
+                            📜 Typ
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Rechte Spalte: Erklärung -->
+                <div class="rounded-2xl border border-gold/20 bg-museum-accent/40 px-6 py-5 space-y-3">
+                    <p class="text-gold/90 font-semibold text-base sm:text-lg">So funktioniert die KI-Analyse</p>
+                    <p class="text-white/75 text-sm sm:text-base leading-relaxed">
+                        Wählen Sie eine der beiden Optionen, um die Münze mit einem KI-Modell zu untersuchen.
+                        Das Modell wurde mit tausenden historischen Münzen aus dem
+                        <span class="text-gold/90 font-medium">Corpus Nummorum</span> trainiert.
+                    </p>
+                    <ul class="space-y-1 text-sm text-white/65">
+                        <li>
+                            <span class="text-gold font-semibold">🏛️ Münzstätte</span> –
+                            Wo wurde die Münze geprägt?
+                        </li>
+                        <li>
+                            <span class="text-gold font-semibold">📜 Typ</span> –
+                            Welchem Münztyp gehört sie an?
+                        </li>
+                    </ul>
+                    <p class="text-white/45 text-xs">
+                        Vorder- und Rückseite werden gemeinsam analysiert. Sie erhalten die wahrscheinlichsten Treffer mit Konfidenzwerten.
+                    </p>
+                </div>
+
             </div>
         </div>
 
