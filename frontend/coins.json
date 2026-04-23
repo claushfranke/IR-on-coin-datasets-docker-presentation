@@ -41,7 +41,11 @@
     },
     "diameter_mm": 22,
     "weight_g": 8.87,
-    "axis": null
+    "axis": null,
+    "image_credit": {
+      "photographer": "Bernhard Weisser",
+      "license": "Public Domain Mark 1.0"
+    }
   },
   {
     "id": "coin_02",
@@ -85,7 +89,11 @@
     },
     "diameter_mm": 33,
     "weight_g": 15.82,
-    "axis": null
+    "axis": null,
+    "image_credit": {
+      "photographer": "Landesmuseum W\u00fcrttemberg, M\u00fcnzkabinett",
+      "license": "CC BY 4.0"
+    }
   },
   {
     "id": "coin_03",
@@ -129,7 +137,11 @@
     },
     "diameter_mm": 20,
     "weight_g": 6.73,
-    "axis": null
+    "axis": null,
+    "image_credit": {
+      "photographer": "Dirk Sonnenwald",
+      "license": "Public Domain Mark 1.0"
+    }
   },
   {
     "id": "coin_04",
@@ -173,7 +185,11 @@
     },
     "diameter_mm": 15,
     "weight_g": 1.98,
-    "axis": 12
+    "axis": 12,
+    "image_credit": {
+      "photographer": "Dirk Sonnenwald",
+      "license": "Public Domain Mark 1.0"
+    }
   },
   {
     "id": "coin_05",
@@ -217,7 +233,11 @@
     },
     "diameter_mm": 36,
     "weight_g": 16.71,
-    "axis": 11
+    "axis": 11,
+    "image_credit": {
+      "photographer": "Lutz-J\u00fcrgen L\u00fcbke (L\u00fcbke & Wiedemann)",
+      "license": "Public Domain Mark 1.0"
+    }
   },
   {
     "id": "coin_06",
@@ -261,7 +281,11 @@
     },
     "diameter_mm": 13,
     "weight_g": 2.74,
-    "axis": 6
+    "axis": 6,
+    "image_credit": {
+      "photographer": "Lutz-J\u00fcrgen L\u00fcbke (L\u00fcbke & Wiedemann)",
+      "license": "Public Domain Mark 1.0"
+    }
   },
   {
     "id": "coin_07",
@@ -305,6 +329,10 @@
     },
     "diameter_mm": 30,
     "weight_g": 13.74,
-    "axis": 1
+    "axis": 1,
+    "image_credit": {
+      "photographer": "Lutz-J\u00fcrgen L\u00fcbke (L\u00fcbke & Wiedemann)",
+      "license": "Public Domain Mark 1.0"
+    }
   }
 ]

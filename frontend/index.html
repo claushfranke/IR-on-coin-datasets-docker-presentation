@@ -257,13 +257,11 @@
         <div id="screen-gallery">
             <!-- Header -->
             <div class="text-center mb-8 sm:mb-12">
-                <h2 class="font-display text-base sm:text-lg lg:text-xl font-bold text-gold mb-1"
+                <div class="text-5xl sm:text-6xl lg:text-7xl mb-3">🪙</div>
+                <h2 class="font-display text-base sm:text-lg lg:text-xl font-bold text-gold"
                     style="text-shadow: 2px 2px 12px rgba(0,0,0,0.5);">
-                    🪙 Bestimmen Sie eine Münze
+                    Bestimmen Sie eine Münze
                 </h2>
-                <p class="text-slate-400 text-xs sm:text-sm max-w-3xl mx-auto leading-relaxed">
-                    Bitte wählen Sie eine Münze aus, um ihre Münzstätte bzw. ihren Typ zu bestimmen.
-                </p>
             </div>
 
             <!-- Münz-Raster -->
@@ -310,7 +308,6 @@
                             <p class="text-gold/80 text-sm mt-2 font-medium">Rückseite (Revers)</p>
                         </div>
                     </div>
-
                     <!-- Analyse-Buttons -->
                     <div class="flex flex-row gap-4 w-full justify-center">
                         <button onclick="startAnalysis('mints')"
@@ -457,6 +454,16 @@
         // API-Anfragen laufen über den Nginx-Proxy – kein hardcodierter Port nötig
         const API_BASE = '';
 
+        // Copyright-ID → Lizenzname (Corpus Nummorum)
+        const CN_COPYRIGHT = {
+            1: 'CC BY 4.0',
+            2: 'Public Domain Mark 1.0',
+            3: 'CC BY-NC 4.0',
+            4: 'CC BY-NC-SA 4.0',
+            5: 'CC0 1.0 Universal',
+            6: 'All rights reserved',
+        };
+
         let coins = [];
         let selectedCoin = null;
 
@@ -510,6 +517,15 @@
                     </h3>
                 </div>
             `).join('');
+
+            const credits = document.getElementById('footer-credits');
+            if (credits) {
+                credits.innerHTML = coins.map((coin, i) =>
+                    coin.image_credit
+                        ? `<p>Münze ${i + 1}: ${coin.image_credit.photographer} &middot; ${coin.image_credit.license}</p>`
+                        : ''
+                ).join('');
+            }
         }
 
         // ─── Münze auswählen ───
@@ -519,6 +535,9 @@
             document.getElementById('selected-obverse').src = selectedCoin.obverse;
             document.getElementById('selected-reverse').src = selectedCoin.reverse;
 
+            const credit = selectedCoin.image_credit
+                ? `${selectedCoin.image_credit.photographer} · ${selectedCoin.image_credit.license} · Corpus Nummorum`
+                : 'Corpus Nummorum';
             showScreen('screen-selected');
         }
 
@@ -752,22 +771,29 @@
 
                 let typeImagesHtml = '';
                 if (pred.type_images && pred.type_images.length > 0) {
-                    const imgPairs = pred.type_images.map(imgSet => `
-                        <div class="flex gap-2">
-                            <div class="text-center">
-                                <img src="${imgSet.obverse_url}" alt="Avers"
-                                     class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-gold/20"
-                                     loading="lazy">
-                                <p class="text-gold/50 text-xs mt-1">Avers</p>
+                    const imgPairs = pred.type_images.map((imgSet, idx) => {
+                        const license = CN_COPYRIGHT[imgSet.copyright_id] || 'Corpus Nummorum';
+                        const credit = imgSet.author ? `${imgSet.author} · ${license}` : license;
+                        return `
+                        <div class="flex flex-col gap-1">
+                            <div class="flex gap-2">
+                                <div class="text-center">
+                                    <img src="${imgSet.obverse_url}" alt="Avers"
+                                         class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-gold/20"
+                                         loading="lazy">
+                                    <p class="text-gold/50 text-xs mt-1">Avers</p>
+                                </div>
+                                <div class="text-center">
+                                    <img src="${imgSet.reverse_url}" alt="Revers"
+                                         class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-gold/20"
+                                         loading="lazy">
+                                    <p class="text-gold/50 text-xs mt-1">Revers</p>
+                                </div>
                             </div>
-                            <div class="text-center">
-                                <img src="${imgSet.reverse_url}" alt="Revers"
-                                     class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-gold/20"
-                                     loading="lazy">
-                                <p class="text-gold/50 text-xs mt-1">Revers</p>
-                            </div>
+                            <p class="text-white/30 text-xs text-center leading-snug">${credit}</p>
                         </div>
-                    `).join('');
+                        `;
+                    }).join('');
                     typeImagesHtml = `
                         <div class="mt-3 pt-3 border-t border-white/5 flex items-start gap-4">
                             <div class="flex-1 min-w-0">
@@ -874,6 +900,16 @@
             showScreen('screen-results');
             renderRealCoinInfo(selectedCoin);
 
+            // Credit in Ergebnisansicht setzen
+            const creditEl = document.getElementById('result-credit');
+            if (creditEl) {
+                if (selectedCoin && selectedCoin.image_credit) {
+                    creditEl.textContent = `${selectedCoin.image_credit.photographer} · ${selectedCoin.image_credit.license} · Corpus Nummorum`;
+                } else {
+                    creditEl.textContent = 'Corpus Nummorum · CC BY-NC-SA 4.0';
+                }
+            }
+
             // Konfidenz-Balken animieren
             requestAnimationFrame(() => {
                 setTimeout(() => {
@@ -950,6 +986,7 @@
         <p>Imagines Nummorum – ein Projekt der Berlin-Brandenburgischen Akademie der Wissenschaften &nbsp;&middot;&nbsp; imagines-nummorum.eu &nbsp;&middot;&nbsp; bbaw.de</p>
         <p>KI-Modelle basierend auf IR-on-coin-datasets (Sebastian Gampe, Frankfurt Big Data Lab) &nbsp;&middot;&nbsp; CC BY-NC-SA 3.0 DE &nbsp;&middot;&nbsp; github.com/Frankfurt-BigDataLab/IR-on-coin-datasets</p>
         <p>Münzdaten: Corpus Nummorum &nbsp;&middot;&nbsp; CC BY 4.0 &nbsp;&middot;&nbsp; corpus-nummorum.eu</p>
+        <div id="footer-credits" class="pt-1 flex flex-wrap justify-center gap-x-4 gap-y-0.5"></div>
     </footer>
 </body>
 </html>

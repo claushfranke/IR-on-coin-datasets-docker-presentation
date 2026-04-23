@@ -324,7 +324,12 @@ def fetch_type_data(type_id) -> dict:
                 obv_thumb = (obv.get("thumbnail") or {}).get("lg") or obv.get("link")
                 rev_thumb = (rev.get("thumbnail") or {}).get("lg") or rev.get("link")
                 if obv_thumb and rev_thumb:
-                    images.append({"obverse_url": obv_thumb, "reverse_url": rev_thumb})
+                    images.append({
+                        "obverse_url": obv_thumb,
+                        "reverse_url": rev_thumb,
+                        "author": obv.get("author") or rev.get("author"),
+                        "copyright_id": obv.get("copyright") or rev.get("copyright"),
+                    })
             result["images"] = images
         except Exception as e:
             logger.warning(f"Bilder-Extraktion fehlgeschlagen für Typ {type_id}: {e}")
