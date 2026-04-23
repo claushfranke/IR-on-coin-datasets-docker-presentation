@@ -30,9 +30,19 @@ If you use this work, please cite the original repository:
 
 ## License
 
-Content is licensed under a
-[Creative Commons Attribution – NonCommercial – ShareAlike 3.0 Germany](http://creativecommons.org/licenses/by-nc-sa/3.0/de/)
-license (CC BY-NC-SA 3.0 DE).
+### Source Code
+
+All source code in this repository was written by **Claus Franke** and is licensed under
+**[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)** — free to use, share, and adapt,
+even commercially, with attribution.
+
+### Pre-trained AI Models
+
+This application downloads pre-trained models from the **Frankfurt Big Data Lab** at runtime
+(not stored in this repository). Those model files remain under their original license:
+**[CC BY-NC-SA 3.0 DE](http://creativecommons.org/licenses/by-nc-sa/3.0/de/)**.
+
+See [LICENSE.md](LICENSE.md) for details.
 
 ---
 
