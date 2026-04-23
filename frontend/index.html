@@ -222,18 +222,29 @@
             title="Zur Startseite"
             style="background: linear-gradient(180deg, rgba(16,33,62,0.98) 0%, rgba(26,26,46,0.95) 100%);
                    backdrop-filter: blur(12px);">
-        <div class="flex items-center justify-center gap-4 sm:gap-6 px-4 py-3 sm:py-4 max-w-7xl mx-auto">
-            <img src="https://www.imagines-nummorum.eu/images/logo-imagnum.svg"
-                 alt="Imagines Nummorum Logo"
-                 class="h-10 sm:h-12 lg:h-14 flex-shrink-0">
+        <div class="flex items-center justify-center gap-6 sm:gap-10 px-4 py-5 sm:py-8 max-w-7xl mx-auto">
+            <div class="flex items-center gap-3 flex-shrink-0">
+                <img src="https://www.imagines-nummorum.eu/images/logo-imagnum.svg"
+                     alt="Imagines Nummorum Logo"
+                     class="h-16 sm:h-20 lg:h-24">
+                <div class="flex flex-col items-center gap-1">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&color=C8A951&bgcolor=1a1a2e&data=https://www.imagines-nummorum.eu/"
+                         alt="QR-Code imagines-nummorum.eu"
+                         class="h-16 sm:h-20 lg:h-24 w-auto">
+                    <span class="text-gold/50 text-xs hidden sm:block">imagines-nummorum.eu</span>
+                </div>
+            </div>
             <div class="text-center sm:text-left">
-                <h1 class="font-display text-lg sm:text-xl lg:text-2xl font-bold text-gold leading-tight">
+                <h1 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gold leading-tight">
                     CN Münzbilderkennung
                 </h1>
-                <p class="text-slate-400 text-xs sm:text-sm hidden sm:block">
+                <p class="text-slate-400 text-sm sm:text-base hidden sm:block">
                     Automatische Typ- &amp; Prägestättenbestimmung antiker Münzen
                 </p>
             </div>
+            <img src="https://www.imagines-nummorum.eu/images/partner/bbaw-negativ-rot-2025.svg"
+                 alt="BBAW Logo"
+                 class="h-16 sm:h-20 lg:h-24 flex-shrink-0">
         </div>
     </header>
 
@@ -246,11 +257,11 @@
         <div id="screen-gallery">
             <!-- Header -->
             <div class="text-center mb-8 sm:mb-12">
-                <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-gold mb-4"
+                <h2 class="font-display text-base sm:text-lg lg:text-xl font-bold text-gold mb-1"
                     style="text-shadow: 2px 2px 12px rgba(0,0,0,0.5);">
                     🪙 Bestimmen Sie eine Münze
                 </h2>
-                <p class="text-slate-400 text-base sm:text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed">
+                <p class="text-slate-400 text-xs sm:text-sm max-w-3xl mx-auto leading-relaxed">
                     Bitte wählen Sie eine Münze aus, um ihre Münzstätte bzw. ihren Typ zu bestimmen.
                 </p>
             </div>
@@ -935,28 +946,10 @@
     </script>
 
     <!-- ─── FOOTER ─── -->
-    <footer class="w-full mt-auto py-4 px-6 text-center text-xs text-white/30 border-t border-white/10">
-        <p>
-            Based on
-            <a href="https://github.com/Frankfurt-BigDataLab/IR-on-coin-datasets"
-               target="_blank" rel="noopener"
-               class="text-gold/50 hover:text-gold/80 underline underline-offset-2 transition-colors">
-                IR-on-coin-datasets
-            </a>
-            by Frankfurt Big Data Lab
-            &nbsp;·&nbsp;
-            Licensed under
-            <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/de/"
-               target="_blank" rel="noopener"
-               class="text-gold/50 hover:text-gold/80 underline underline-offset-2 transition-colors">
-                CC BY-NC-SA 3.0 DE
-            </a>
-            &nbsp;·&nbsp;
-            Coin data: <a href="https://www.corpus-nummorum.eu/" target="_blank" rel="noopener"
-               class="text-gold/50 hover:text-gold/80 underline underline-offset-2 transition-colors">
-                Corpus Nummorum
-            </a>
-        </p>
+    <footer class="w-full mt-auto py-5 px-6 text-center text-xs text-white/30 border-t border-white/10 space-y-1">
+        <p>Imagines Nummorum – ein Projekt der Berlin-Brandenburgischen Akademie der Wissenschaften &nbsp;&middot;&nbsp; imagines-nummorum.eu &nbsp;&middot;&nbsp; bbaw.de</p>
+        <p>KI-Modelle basierend auf IR-on-coin-datasets (Sebastian Gampe, Frankfurt Big Data Lab) &nbsp;&middot;&nbsp; CC BY-NC-SA 3.0 DE &nbsp;&middot;&nbsp; github.com/Frankfurt-BigDataLab/IR-on-coin-datasets</p>
+        <p>Münzdaten: Corpus Nummorum &nbsp;&middot;&nbsp; CC BY 4.0 &nbsp;&middot;&nbsp; corpus-nummorum.eu</p>
     </footer>
 </body>
 </html>
