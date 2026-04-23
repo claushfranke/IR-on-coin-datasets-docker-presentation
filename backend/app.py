@@ -86,6 +86,8 @@ class AnalyzeRequest(BaseModel):
 class TypeImageSet(BaseModel):
     obverse_url: str
     reverse_url: str
+    author: str | None = None
+    copyright_id: int | None = None
 
 
 class MintCoordinates(BaseModel):
