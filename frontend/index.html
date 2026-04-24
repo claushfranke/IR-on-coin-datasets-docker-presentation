@@ -254,7 +254,7 @@
                         Tippen Sie auf eine Münze!
                     </h2>
                 </div>
-                <p class="text-slate-400 text-sm sm:text-base mt-3">Die KI sagt Ihnen, wo sie geprägt wurde – oder welchem Typ sie angehört.</p>
+                <p class="text-slate-400 text-sm sm:text-base mt-3">Die KI sagt Ihnen, wo sie geprägt wurde oder welchem Typ sie angehört.</p>
             </div>
 
             <!-- Münz-Raster -->
@@ -294,9 +294,9 @@
                             <img id="selected-reverse" src="" alt="Rückseite"
                                  class="w-1/2 aspect-square object-cover rounded-xl border border-gold/20">
                         </div>
-                        <div class="flex text-gold/60 text-xs justify-around">
-                            <span>Vorderseite (Avers)</span>
-                            <span>Rückseite (Revers)</span>
+                        <div class="flex text-gold/60 text-base sm:text-lg justify-around">
+                            <span>Vorderseite</span>
+                            <span>Rückseite</span>
                         </div>
                     </div>
                     <!-- Analyse-Buttons -->
@@ -354,9 +354,12 @@
 
         <!-- ─── SCREEN 3: LADEN ─── -->
         <div id="screen-loading" class="hidden">
-            <div class="fixed inset-0 z-50 flex items-center justify-center"
+            <div class="fixed left-0 right-0 bottom-0 top-20 sm:top-28 z-50 flex items-start justify-center overflow-y-auto"
                  style="background: rgba(26, 26, 46, 0.92); backdrop-filter: blur(8px);">
-                <div class="text-center">
+                <div class="text-center w-full max-w-5xl mx-auto px-4 py-6 sm:py-8">
+                    <p class="inline-block mb-5 mt-7 text-base sm:text-xl font-bold tracking-wide text-gold-light bg-gradient-to-r from-emerald-500/20 via-gold/20 to-emerald-500/20 border border-gold/40 rounded-xl px-4 sm:px-6 py-2 sm:py-3  shadow-[0_0_22px_rgba(200,169,81,0.25)]">
+                        Alle Berechnungen und Ausgaben werden live erstellt.
+                    </p>
                     <div id="loading-progress" class="space-y-5">
                         <div class="coin-flip-container inline-block">
                             <div class="coin-flip w-36 h-36 sm:w-44 sm:h-44" style="position:relative;">
@@ -388,18 +391,19 @@
                         </button>
                     </div>
 
-                    <div class="mt-6 mx-4 max-w-3xl text-left bg-museum-card/60 border border-gold/20 rounded-2xl p-4 sm:p-5">
-                        <h4 class="font-display text-gold text-base sm:text-lg mb-2">
+                    <div class="mt-6 mx-auto w-full max-w-3xl text-center bg-museum-card/60 border border-gold/20 rounded-2xl p-4 sm:p-5">
+                        <h4 class="font-display text-gold text-lg sm:text-xl mb-2">
                             KI-gestützte Münzerkennung: Antike Schätze digital entschlüsselt
                         </h4>
-                        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-3">
+                        
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-3">
                             Diese Ki-Münzerkennung wurde von Forschern des Frankfurt Big Data Labs im Zuge eines Projektes mit Corpus Nummorum entwickelt.
                             Die KI analysiert antike griechische Münzen mit spezialisierten Bildmodellen auf Expertenniveau.
                         </p>
-                        <ul class="space-y-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        <ul class="list-none p-0 space-y-2 text-sm sm:text-base text-slate-300 leading-relaxed">
                             <li><span class="text-gold/90 font-semibold">Modelle:</span> CNNs (u. a. VGG16, VGG19, ResNet50); besonders effektiv: VGG16.</li>
                             <li><span class="text-gold/90 font-semibold">Bildfusion:</span> Vorder- und Rückseite werden digital zu einem Gesamtbild kombiniert.</li>
-                            <li><span class="text-gold/90 font-semibold">Abgleich:</span> Vergleich mit über 115.000 Bild-Datensätzen aus dem Corpus Nummorum.</li>
+                            <li><span class="text-gold/90 font-semibold">Abgleich:</span> Vergleich mit über 115.000 Bild-Datensätzen aus dem Corpus Nummorum, dem Münzkabinett Berlin und der Bibliothèque nationale de France, Département des Monnaies, médailles et antiques.</li>
                             <li><span class="text-gold/90 font-semibold">Trefferquote:</span> Top-5-Genauigkeit bei der Typbestimmung von 97 %.</li>
                         </ul>
                     </div>
