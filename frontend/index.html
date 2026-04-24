@@ -236,10 +236,10 @@
             </div>
             <div class="text-center sm:text-left">
                 <h1 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gold leading-tight">
-                    CN Münzbilderkennung
+                    KI-Münzerkennung
                 </h1>
                 <p class="text-slate-400 text-sm sm:text-base hidden sm:block">
-                    Automatische Typ- &amp; Prägestättenbestimmung antiker Münzen
+                    Antike Münzen automatisch bestimmen
                 </p>
             </div>
             <img src="https://www.imagines-nummorum.eu/images/partner/bbaw-negativ-rot-2025.svg"
@@ -261,9 +261,10 @@
                     <div class="text-4xl sm:text-5xl lg:text-6xl leading-none">🪙</div>
                     <h2 class="font-display text-2xl sm:text-4xl lg:text-5xl font-bold text-gold leading-tight"
                         style="text-shadow: 2px 2px 12px rgba(0,0,0,0.5);">
-                        Bestimmen Sie eine Münze
+                        Tippen Sie auf eine Münze!
                     </h2>
                 </div>
+                <p class="text-slate-400 text-sm sm:text-base mt-3">Die KI sagt Ihnen, wo sie geprägt wurde – oder welchem Typ sie angehört.</p>
             </div>
 
             <!-- Münz-Raster -->
@@ -286,7 +287,7 @@
 
             <!-- Überschrift -->
             <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gold text-center mb-6">
-                Was möchten Sie bei dieser Münze bestimmen?
+                Was soll die KI herausfinden?
             </h2>
 
             <!-- Zweispaltig: links Münzen + Buttons, rechts Erklärung -->
@@ -295,59 +296,66 @@
                 <!-- Linke Spalte: Münzbilder + Buttons -->
                 <div class="flex flex-col items-center gap-6">
 
-                    <!-- Münzbilder -->
-                    <div class="flex flex-row items-end justify-center gap-6 sm:gap-10">
-                        <div class="text-center">
+                    <!-- Münzbilder – wie Galerie-Karte -->
+                    <div class="bg-museum-card/60 rounded-2xl border border-white/10 p-4 w-full">
+                        <div class="flex gap-3 mb-3">
                             <img id="selected-obverse" src="" alt="Vorderseite"
-                                 class="w-44 h-44 sm:w-52 sm:h-52 lg:w-60 lg:h-60 object-cover rounded-2xl
-                                        border-2 border-gold/30 shadow-lg shadow-black/30">
-                            <p class="text-gold/80 text-sm mt-2 font-medium">Vorderseite (Avers)</p>
-                        </div>
-                        <div class="text-center">
+                                 class="w-1/2 aspect-square object-cover rounded-xl border border-gold/20">
                             <img id="selected-reverse" src="" alt="Rückseite"
-                                 class="w-44 h-44 sm:w-52 sm:h-52 lg:w-60 lg:h-60 object-cover rounded-2xl
-                                        border-2 border-gold/30 shadow-lg shadow-black/30">
-                            <p class="text-gold/80 text-sm mt-2 font-medium">Rückseite (Revers)</p>
+                                 class="w-1/2 aspect-square object-cover rounded-xl border border-gold/20">
+                        </div>
+                        <div class="flex text-gold/60 text-xs justify-around">
+                            <span>Vorderseite (Avers)</span>
+                            <span>Rückseite (Revers)</span>
                         </div>
                     </div>
                     <!-- Analyse-Buttons -->
                     <div class="flex flex-row gap-4 w-full justify-center">
                         <button onclick="startAnalysis('mints')"
-                                class="touch-btn flex-1 max-w-xs px-6 py-5 rounded-2xl text-lg sm:text-xl font-bold
+                                class="touch-btn flex-1 max-w-xs px-6 py-5 rounded-2xl
                                        bg-gradient-to-br from-gold to-gold-dark text-museum-bg
-                                       shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]">
-                            🏛️ Münzstätte
+                                       shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]
+                                       flex flex-col items-center justify-center gap-1 text-center">
+                            <span class="text-2xl leading-none">🏛️</span>
+                            <span class="text-base sm:text-lg font-bold leading-tight">Wo geprägt?</span>
+                            <span class="text-xs font-normal opacity-70">Münzstätte bestimmen</span>
                         </button>
                         <button onclick="startAnalysis('types')"
-                                class="touch-btn flex-1 max-w-xs px-6 py-5 rounded-2xl text-lg sm:text-xl font-bold
+                                class="touch-btn flex-1 max-w-xs px-6 py-5 rounded-2xl
                                        bg-gradient-to-br from-gold to-gold-dark text-museum-bg
-                                       shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]">
-                            📜 Typ
+                                       shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]
+                                       flex flex-col items-center justify-center gap-1 text-center">
+                            <span class="text-2xl leading-none">📜</span>
+                            <span class="text-base sm:text-lg font-bold leading-tight">Welcher Typ?</span>
+                            <span class="text-xs font-normal opacity-70">Münztyp erkennen</span>
                         </button>
                     </div>
 
                 </div>
 
                 <!-- Rechte Spalte: Erklärung -->
-                <div class="rounded-2xl border border-gold/20 bg-museum-accent/40 px-6 py-5 space-y-3">
-                    <p class="text-gold/90 font-semibold text-base sm:text-lg">So funktioniert die KI-Analyse</p>
-                    <p class="text-white/75 text-sm sm:text-base leading-relaxed">
-                        Wählen Sie eine der beiden Optionen, um die Münze mit einem KI-Modell zu untersuchen.
-                        Das Modell wurde mit tausenden historischen Münzen aus dem
-                        <span class="text-gold/90 font-medium">Corpus Nummorum</span> trainiert.
-                    </p>
-                    <ul class="space-y-1 text-sm text-white/65">
-                        <li>
-                            <span class="text-gold font-semibold">🏛️ Münzstätte</span> –
-                            Wo wurde die Münze geprägt?
+                <div class="rounded-2xl border-2 border-gold/50 bg-museum-accent/60 px-7 py-6 space-y-5
+                            shadow-lg shadow-gold/10">
+                    <p class="font-display text-gold font-bold text-xl sm:text-2xl">So einfach geht's:</p>
+                    <ol class="space-y-4 text-white/90 text-base sm:text-lg">
+                        <li class="flex items-start gap-4">
+                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-gold text-museum-bg
+                                         font-bold text-base flex items-center justify-center">1</span>
+                            <span class="pt-0.5">Drücken Sie einen der beiden goldenen Knöpfe.</span>
                         </li>
-                        <li>
-                            <span class="text-gold font-semibold">📜 Typ</span> –
-                            Welchem Münztyp gehört sie an?
+                        <li class="flex items-start gap-4">
+                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-gold text-museum-bg
+                                         font-bold text-base flex items-center justify-center">2</span>
+                            <span class="pt-0.5">Die KI analysiert Vorder- und Rückseite der Münze – das dauert ein paar Sekunden.</span>
                         </li>
-                    </ul>
-                    <p class="text-white/75 text-sm sm:text-base leading-relaxed">
-                        Vorder- und Rückseite werden gemeinsam analysiert. Sie erhalten die wahrscheinlichsten Treffer mit Konfidenzwerten.
+                        <li class="flex items-start gap-4">
+                            <span class="flex-shrink-0 w-8 h-8 rounded-full bg-gold text-museum-bg
+                                         font-bold text-base flex items-center justify-center">3</span>
+                            <span class="pt-0.5">Sie sehen die wahrscheinlichsten Treffer – mit Links zur Originaldatenbank.</span>
+                        </li>
+                    </ol>
+                    <p class="text-white/50 text-sm pt-2 border-t border-white/10">
+                        Das KI-Modell wurde mit tausenden antiken Münzen aus dem Corpus Nummorum trainiert.
                     </p>
                 </div>
 
@@ -373,9 +381,9 @@
                         </div>
                     </div>
                     <h3 class="font-display text-2xl sm:text-3xl text-gold pulse-text mb-3">
-                        Bitte warten
+                        Die KI arbeitet …
                     </h3>
-                    <p class="text-slate-400 text-lg pulse-text">Analysiere Münze…</p>
+                    <p class="text-slate-400 text-lg pulse-text">Bitte einen Moment warten</p>
                 </div>
             </div>
         </div>
@@ -390,7 +398,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
-                    Andere Analyse
+                    Andere Frage stellen
                 </button>
                 <button onclick="showGallery()"
                         class="touch-btn flex items-center gap-2 text-slate-400 hover:text-slate-200
@@ -410,25 +418,34 @@
             <!-- Ergebnis-Layout -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                <!-- Linke Spalte: Bilder -->
-                <div class="space-y-6 fade-in-up fade-in-up-delay-1">
+                <!-- Linke Spalte: Top-5 Treffer -->
+                <div class="space-y-4 fade-in-up fade-in-up-delay-1">
+                    <h3 class="font-display text-xl sm:text-2xl font-bold text-gold">
+                    </h3>
+                    <div id="result-predictions" class="space-y-3">
+                        <!-- Wird per JS gefüllt -->
+                    </div>
+                </div>
+
+                <!-- Rechte Spalte: Bilder -->
+                <div class="space-y-6 fade-in-up fade-in-up-delay-2">
                     <!-- GradCAM -->
                     <div class="bg-museum-card/60 rounded-2xl border border-gold/20 p-5">
-                        <h3 class="font-display text-lg text-gold mb-3">Modell-Aufmerksamkeit (GradCAM)</h3>
+                        <h3 class="font-display text-lg text-gold mb-1">Worauf hat die KI geachtet?</h3>
                         <p class="text-slate-400 text-sm mb-4">
-                            Die Heatmap zeigt, welche Bildbereiche für die Vorhersage besonders wichtig waren.
-                            Warme Farben (gelb/rot) = hohe Aufmerksamkeit.
+                            Die rechte Abbildung zeigt als Wärmebild, welche Stellen der Münze für die Entscheidung ausschlaggebend waren.
+                            <span class="text-amber-400">Gelb/Rot</span> = besonders wichtig.
                         </p>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="text-center">
                                 <img id="result-combined" src="" alt="Eingabebild"
                                      class="w-full rounded-xl border border-gold/10">
-                                <p class="text-gold/60 text-xs mt-2">Kombiniertes Eingabebild</p>
+                                <p class="text-gold/60 text-xs mt-2">Eingabebild</p>
                             </div>
                             <div class="text-center">
-                                <img id="result-gradcam" src="" alt="GradCAM Heatmap"
+                                <img id="result-gradcam" src="" alt="Wärmebild der KI"
                                      class="w-full rounded-xl border border-gold/10">
-                                <p class="text-gold/60 text-xs mt-2">GradCAM Heatmap</p>
+                                <p class="text-gold/60 text-xs mt-2">KI-Aufmerksamkeit</p>
                             </div>
                         </div>
                     </div>
@@ -437,11 +454,6 @@
                     <div id="real-coin-info" class="hidden bg-museum-card/60 rounded-2xl border border-gold/30 p-5">
                         <!-- Wird per JS befüllt -->
                     </div>
-                </div>
-
-                <!-- Rechte Spalte: Top-5 Ergebnisse -->
-                <div id="result-predictions" class="space-y-3">
-                    <!-- Wird per JS gefüllt -->
                 </div>
             </div>
         </div>
@@ -696,7 +708,7 @@
             box.innerHTML = `
                 <div class="flex items-start justify-between gap-4 mb-4">
                     <h3 class="font-display text-lg text-gold leading-tight">
-                        Dieser Münztyp im Corpus Nummorum
+                        … und das ist der tatsächliche Münztyp im Corpus Nummorum:
                     </h3>
                     <div class="flex-shrink-0 flex flex-col items-center gap-1">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(coin.cn_link)}&bgcolor=16213e&color=C8A951&format=png&qzone=1"
@@ -758,8 +770,8 @@
 
         // ─── Ergebnis anzeigen ───
         function displayResults(data, mode) {
-            const modeLabel = mode === 'types' ? 'Typ' : 'Münzstätte';
-            document.getElementById('result-title').textContent = `Ergebnis – ${modeLabel}`;
+            const modeLabel = mode === 'types' ? 'Welchem Typ gehört die Münze an?' : 'Wo wurde die Münze geprägt?';
+            document.getElementById('result-title').textContent = modeLabel;
 
             // Bilder setzen
             document.getElementById('result-combined').src = `data:image/png;base64,${data.combined_image}`;
@@ -767,7 +779,13 @@
 
             // Predictions rendern
             const container = document.getElementById('result-predictions');
-            const medals = ['🥇', '🥈', '🥉', '4.', '5.'];
+            const rankStyles = [
+                { circle: 'bg-gold border-gold shadow-gold/40 shadow-md scale-110', text: 'text-museum-bg text-2xl font-black' },
+                { circle: 'bg-gold/20 border-gold/40', text: 'text-gold/70 text-base font-bold' },
+                { circle: 'bg-gold/10 border-gold/25', text: 'text-gold/50 text-base font-bold' },
+                { circle: 'bg-white/5 border-white/15', text: 'text-white/40 text-sm font-semibold' },
+                { circle: 'bg-white/5 border-white/15', text: 'text-white/40 text-sm font-semibold' },
+            ];
             const typeCredits = [];
 
             container.innerHTML = data.predictions.map((pred, i) => {
@@ -833,7 +851,7 @@
                             <div class="mt-3 pt-3 border-t border-white/5 flex items-start gap-3">
                                 <div id="${mapId}"
                                      class="mint-map flex-1 rounded-lg border border-gold/20 overflow-hidden"
-                                     style="height: 200px; min-width: 0;"
+                                     style="height: 300px; min-width: 0;"
                                      data-lat="${pred.mint_coordinates.lat}"
                                      data-lon="${pred.mint_coordinates.lon}">
                                 </div>
@@ -876,29 +894,28 @@
 
                 return `
                 <div class="fade-in-up fade-in-up-delay-${i + 1}
-                            bg-museum-card/60 rounded-2xl border border-gold/20 p-5
-                            hover:border-gold/40 transition-colors">
+                            bg-museum-card/60 rounded-2xl p-5 transition-colors
+                            ${i === 0 ? 'border-2 border-gold/70 shadow-lg shadow-gold/15' : 'border border-gold/20 hover:border-gold/40'}">
+                    ${i === 0 ? '<p class="text-gold/80 text-xs font-bold uppercase tracking-widest mb-3">✦ Wahrscheinlichstes Ergebnis</p>' : ''}
                     <div class="flex items-center gap-4 mb-3">
                         <!-- Rang -->
-                        <div class="flex-shrink-0 w-12 h-12 rounded-full
-                                    bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/30
-                                    flex items-center justify-center">
-                            <span class="text-lg font-bold ${i === 0 ? 'text-gold' : 'text-gold/60'}">
-                                ${medals[i] || (i + 1) + '.'}
-                            </span>
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full border
+                                    ${rankStyles[i].circle}
+                                    flex items-center justify-center transition-transform">
+                            <span class="${rankStyles[i].text}">${i + 1}</span>
                         </div>
                         <!-- Label -->
                         <div class="flex-1 min-w-0">
                             <p class="text-slate-400 text-xs uppercase tracking-wide">
                                 ${mode === 'types' ? 'Typ-ID' : 'Münzstätte'}
                             </p>
-                            <p class="text-white text-lg font-semibold truncate">
+                            <p class="${i === 0 ? 'text-white text-xl font-bold' : 'text-white/80 text-lg font-semibold'} truncate">
                                 ${pred.display_label}
                             </p>
                         </div>
                         <!-- Prozent -->
                         <div class="flex-shrink-0 text-right">
-                            <span class="text-xl font-bold ${i === 0 ? 'text-gold' : 'text-gold/70'}">
+                            <span class="font-bold ${i === 0 ? 'text-gold text-2xl' : 'text-gold/60 text-lg'}">
                                 ${formatConfidence(pred.confidence)}
                             </span>
                         </div>
@@ -957,7 +974,7 @@
                             zoomControl: true,
                             attributionControl: false,
                             scrollWheelZoom: false,
-                        }).setView([lat, lon], 6);
+                        }).setView([lat, lon], 7);
 
                         L.tileLayer('https://dh.gu.se/tiles/imperium/{z}/{x}/{y}.png', {
                             maxZoom: 12,
