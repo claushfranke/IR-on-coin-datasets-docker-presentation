@@ -452,6 +452,10 @@
 
                 <!-- Rechte Spalte: Bilder -->
                 <div class="space-y-6 fade-in-up fade-in-up-delay-2">
+                    <div id="prediction-note" class="hidden bg-red-950/35 rounded-2xl border border-red-400/35 p-5">
+                        <!-- Wird per JS befüllt -->
+                    </div>
+
                     <!-- GradCAM -->
                     <div class="bg-museum-card/60 rounded-2xl border border-gold/20 p-5">
                         <h3 class="font-display text-lg text-gold mb-1">Worauf hat die KI geachtet?</h3>
@@ -505,6 +509,27 @@
         let selectedCoin = null;
         let latestTypeCredits = [];
         let pendingAnalysisResult = null;
+        const PREDICTION_NOTES = {
+            coin_05: {
+                title: 'Warum ist der korrekte Münztyp hier nicht oben gelandet?',
+                paragraphs: [
+                    'Die Münze zeigt eine in Byzantion geprägte posthume silberne Tetradrachme des Lysimachos-Typs; auf der Vorderseite ist der Kopf des vergöttlichten Alexander des Großen zu sehen, auf der Rückseite eine thronende Athena mit einer Nike auf der Hand.',
+                    'Die Heatmap weist darauf hin, dass bei der Zuordnung die Position der Münzlegende auf der Münzrückseite statt des Münzbildes die entscheidende Rolle gespielt hat.',
+                    'Deshalb sind die Vorhersagen als Typ 20230 (hellenistische Bronzemünze aus Kyzikos) und Typ 20806 (thasische Tetradrachme) falsch, obwohl es eine Übereinstimmung in der Anordnung der Münzlegende gibt.',
+                    'Unserer Münze weitaus ähnlicher sind die Typen 8455 und 8461. Hier handelt es sich um silberne hellenistische Tetradrachmen aus Pergamon, die auf der Rückseite ebenfalls die thronende Athena zeigen, aber aufgrund der unterschiedlichen Vorderseiten einem anderen Münzherrn zugewiesen werden müssen: es sind Prägungen von Attalos I., die das Porträt des Philetairos auf der Vorderseite zeigen.',
+                    'Bei den weit verbreiteten posthumen Münzen des Alexandertyps kommt es auf kleine Unterschiede an, die den Typ definieren. Dafür ist noch ausgedehntes Training der KI notwendig.'
+                ]
+            },
+            coin_07: {
+                title: 'Warum ist die Typbestimmung hier nicht eindeutig?',
+                paragraphs: [
+                    'Bei dieser Typbestimmung ist die Vorhersage nicht eindeutig.',
+                    'Beim Typ 2509 entspricht das Rückseitenbild mit dem Preistisch dem zu vorhersagenden Typ und auch die Münzstätte Perinth ist richtig bestimmt. Die Vorderseite zeigt allerdings auf der zu bestimmenden Münze den Kaiser Elagabal und bei dem Typ 2509 den Kaiser Septimius Severus.',
+                    'Die Vorhersage als CN-Typ 2086 bzw. auch 7735 ist komplett falsch: Münzstätte sowie Vorder- und Rückseitentyp sind in beiden Fällen nicht richtig bestimmt. Die Vorgehensweise des CNN-Models ist, wie so oft, auch hier nicht nachvollziehbar.',
+                    'Dies ist ein Beispiel für das notwendige Training der KI, um bei den Tausenden von ähnlichen und häufig stark abgenutzten Münzen den richtigen Typ vorherzusagen.'
+                ]
+            }
+        };
 
         function resetLoadingState() {
             const progress = document.getElementById('loading-progress');
@@ -807,6 +832,34 @@
             box.classList.remove('hidden');
         }
 
+        function renderPredictionNote(coin) {
+            const box = document.getElementById('prediction-note');
+            if (!box) return;
+
+            const note = coin ? PREDICTION_NOTES[coin.id] : null;
+            if (!note) {
+                box.classList.add('hidden');
+                box.innerHTML = '';
+                return;
+            }
+
+            box.innerHTML = `
+                <div class="flex items-start gap-3 mb-3">
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-500/15 border border-red-400/35 text-red-200 flex items-center justify-center text-xl">
+                        !
+                    </div>
+                    <div>
+                        <h3 class="font-display text-lg sm:text-xl text-red-200 mb-1">${note.title}</h3>
+                        <p class="text-red-100/80 text-sm sm:text-base">Hinweis zur Einordnung dieses Ergebnisses.</p>
+                    </div>
+                </div>
+                <div class="space-y-3 text-sm sm:text-base text-red-50/90 leading-relaxed text-left">
+                    ${note.paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('')}
+                </div>
+            `;
+            box.classList.remove('hidden');
+        }
+
         // ─── Konfidenz-Formatierung ───
         function formatConfidence(pct) {
             if (pct >= 99.99995) return '> 99,9999 %';
@@ -987,6 +1040,7 @@
             renderFooterCredits();
 
             showScreen('screen-results');
+            renderPredictionNote(selectedCoin);
             renderRealCoinInfo(selectedCoin);
 
             // Credit in Ergebnisansicht setzen
