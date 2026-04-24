@@ -357,23 +357,36 @@
             <div class="fixed inset-0 z-50 flex items-center justify-center"
                  style="background: rgba(26, 26, 46, 0.92); backdrop-filter: blur(8px);">
                 <div class="text-center">
-                    <!-- Rotierende Münze mit Vorder-/Rückseite -->
-                    <div class="mb-8 coin-flip-container inline-block">
-                        <div class="coin-flip w-36 h-36 sm:w-44 sm:h-44" style="position:relative;">
-                            <!-- Vorderseite: Eule -->
-                            <div class="coin-face coin-obverse">
-                                <span class="text-7xl sm:text-8xl" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🦉</span>
-                            </div>
-                            <!-- Rückseite: Tempel -->
-                            <div class="coin-face coin-reverse">
-                                <span class="text-7xl sm:text-8xl" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🏛️</span>
+                    <div id="loading-progress" class="space-y-5">
+                        <div class="coin-flip-container inline-block">
+                            <div class="coin-flip w-36 h-36 sm:w-44 sm:h-44" style="position:relative;">
+                                <div class="coin-face coin-obverse">
+                                    <span class="text-7xl sm:text-8xl" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🦉</span>
+                                </div>
+                                <div class="coin-face coin-reverse">
+                                    <span class="text-7xl sm:text-8xl" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🏛️</span>
+                                </div>
                             </div>
                         </div>
+                        <p class="text-gold text-xl sm:text-2xl font-display">Münze wird bestimmt …</p>
                     </div>
-                    <h3 class="font-display text-2xl sm:text-3xl text-gold pulse-text mb-3">
-                        Die KI arbeitet …
-                    </h3>
-                    <p class="text-slate-400 text-lg pulse-text">Bitte einen Moment warten</p>
+
+                    <div id="loading-ready" class="hidden mt-2">
+                        <div class="relative inline-flex items-center justify-center w-32 h-32 sm:w-40 sm:h-40 rounded-full
+                                    border-4 border-gold/60 bg-gradient-to-br from-gold/30 to-gold-dark/25
+                                    shadow-[0_0_36px_rgba(200,169,81,0.35)] mb-4">
+                            <span class="text-6xl sm:text-7xl">🪙</span>
+                            <span class="absolute -right-1 -bottom-1 w-9 h-9 rounded-full bg-emerald-500 text-white
+                                         font-black text-xl flex items-center justify-center border-2 border-white/80">✓</span>
+                        </div>
+                        <p class="text-gold text-xl sm:text-2xl font-display mb-4">KI hat Münze bestimmt</p>
+                        <button onclick="showPendingResult()"
+                                class="touch-btn px-6 py-3 rounded-xl font-bold text-museum-bg
+                                       bg-gradient-to-br from-gold to-gold-dark
+                                       shadow-lg shadow-gold/20 hover:shadow-gold/40 hover:scale-[1.03]">
+                            Ergebnis ansehen
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -471,6 +484,22 @@
         let coins = [];
         let selectedCoin = null;
         let latestTypeCredits = [];
+        let pendingAnalysisResult = null;
+
+        function resetLoadingState() {
+            const progress = document.getElementById('loading-progress');
+            const ready = document.getElementById('loading-ready');
+            if (progress) progress.classList.remove('hidden');
+            if (ready) ready.classList.add('hidden');
+        }
+
+        function showPendingResult() {
+            if (!pendingAnalysisResult) return;
+            const { data, mode } = pendingAnalysisResult;
+            pendingAnalysisResult = null;
+            resetLoadingState();
+            displayResults(data, mode);
+        }
 
         // ─── Screens verwalten ───
         function showScreen(screenId) {
@@ -563,6 +592,8 @@
         async function startAnalysis(mode) {
             if (!selectedCoin) return;
 
+            pendingAnalysisResult = null;
+            resetLoadingState();
             showScreen('screen-loading');
             const loadStart = Date.now();
 
@@ -589,10 +620,16 @@
                     await new Promise(r => setTimeout(r, MIN_LOADING_MS - elapsed));
                 }
 
-                displayResults(data, mode);
+                pendingAnalysisResult = { data, mode };
+                const progress = document.getElementById('loading-progress');
+                const ready = document.getElementById('loading-ready');
+                if (progress) progress.classList.add('hidden');
+                if (ready) ready.classList.remove('hidden');
 
             } catch (e) {
                 console.error('Analyse-Fehler:', e);
+                pendingAnalysisResult = null;
+                resetLoadingState();
                 showScreen('screen-selected');
                 showError(e.message);
             }
