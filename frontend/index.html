@@ -536,8 +536,8 @@
                 title: 'Warum ist die Typbestimmung hier nicht eindeutig?',
                 paragraphs: [
                     'Bei dieser Typbestimmung ist die Vorhersage nicht eindeutig.',
-                    'Beim Typ 2509 entspricht das Rückseitenbild mit dem Preistisch dem zu vorhersagenden Typ und auch die Münzstätte Perinth ist richtig bestimmt. Die Vorderseite zeigt allerdings auf der zu bestimmenden Münze den Kaiser Elagabal und bei dem Typ 2509 den Kaiser Septimius Severus.',
-                    'Die Vorhersage als CN-Typ 2086 bzw. auch 7735 ist komplett falsch: Münzstätte sowie Vorder- und Rückseitentyp sind in beiden Fällen nicht richtig bestimmt. Die Vorgehensweise des CNN-Models ist, wie so oft, auch hier nicht nachvollziehbar.',
+                    'Beim Typ 2509 entspricht das Rückseitenbild mit dem Preistisch dem zu vorhersagenden Typ und auch die Münzstätte Perinth ist richtig bestimmt. Die Vorderseite zeigt allerdings auf der zu bestimmenden Münze den Kaiser Elagabal und bei dem Typ 2509 den Kaiser Septimius Severus. Dass die KI diesen Unterschied nicht erkennt, ist nicht verwunderlich: Die Wärmebildanalyse zeigt, dass die Vorderseite bei dieser Bestimmung kaum eine Rolle gespielt hat – das Modell hat seine Entscheidung fast ausschließlich auf Grundlage der Rückseite getroffen.',
+                    'Die weiteren Vorhersagen CN-Typ 2086 und 7735 sind falsch, haben aber ohnehin nur eine sehr geringe Wahrscheinlichkeit erhalten. Das Modell gibt für jeden Analysevorgang eine Wahrscheinlichkeit für alle gelernten Typen aus; hier werden nur die fünf wahrscheinlichsten angezeigt. Münzstätte sowie Vorder- und Rückseitentyp sind in diesen Fällen nicht richtig bestimmt.',
                     'Dies zeigt exemplarisch die Grenzen des Modells: Bei Münztypen, die im Trainingsmaterial nur selten oder gar nicht vorkamen, weicht die Vorhersage auf visuell ähnliche Typen aus. Je mehr Münzbilder eines Typs zum Training zur Verfügung stehen, desto zuverlässiger wird die Bestimmung.'
                 ]
             }
