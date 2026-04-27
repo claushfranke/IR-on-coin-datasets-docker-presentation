@@ -492,17 +492,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <script>
         // ─── Konfiguration ───
-        // API-Anfragen laufen über den Nginx-Proxy – inklusive optionalem Sub-Pfad.
-        function getBasePath() {
-            const rawPath = window.location.pathname || '/';
-            const noIndex = rawPath.endsWith('/index.html')
-                ? rawPath.slice(0, -'/index.html'.length)
-                : rawPath;
-            const normalized = noIndex.replace(/\/+$/, '');
-            return normalized === '' ? '' : normalized;
-        }
-
-        const API_BASE = getBasePath();
+        // Requests bleiben bewusst relativ, damit Root und Sub-Path gleichermaßen funktionieren.
 
         // Copyright-ID → Lizenzname (Corpus Nummorum)
         const CN_COPYRIGHT = {
@@ -578,7 +568,7 @@
         // ─── Münz-Galerie laden ───
         async function loadCoins() {
             try {
-                const resp = await fetch(`${API_BASE}/coins.json`);
+                const resp = await fetch('coins.json');
                 coins = await resp.json();
                 renderGallery();
             } catch (e) {
@@ -652,7 +642,7 @@
             const loadStart = Date.now();
 
             try {
-                const resp = await fetch(`${API_BASE}/api/analyze`, {
+                const resp = await fetch('api/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

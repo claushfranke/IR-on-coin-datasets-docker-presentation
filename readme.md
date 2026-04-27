@@ -74,6 +74,10 @@ For reverse proxies that expose the app under a sub-path, set `APP_BASE_PATH` (w
 APP_BASE_PATH=/imagnum-piai
 ```
 
+Important: do not append `/api` to `APP_BASE_PATH`. Use only the UI prefix path.
+Correct: `APP_BASE_PATH=/imagnum-piai`
+Wrong: `APP_BASE_PATH=/imagnum-piai/api`
+
 Then the app is reachable at `https://<your-host>/imagnum-piai/` and API calls are routed automatically via the same prefix.
 
 ---
