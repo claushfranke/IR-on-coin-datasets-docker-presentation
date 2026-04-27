@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>CN – Münzerkennung</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 
     <!-- TailwindCSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -492,7 +494,18 @@
     <!-- ═══════════════════════════════════════════ -->
     <script>
         // ─── Konfiguration ───
-        // Requests bleiben bewusst relativ, damit Root und Sub-Path gleichermaßen funktionieren.
+        // Basis-Pfad aus der aktuellen URL ableiten (funktioniert für Root und Sub-Paths).
+        function getBasePath() {
+            const pathname = window.location.pathname;
+            // Index.html ggf. abschneiden
+            const withoutFile = pathname.endsWith('/index.html')
+                ? pathname.slice(0, -'index.html'.length)
+                : pathname;
+            // Einheitlich mit Slash → dann Slash entfernen (liefert '' für Root)
+            const withSlash = withoutFile.endsWith('/') ? withoutFile : withoutFile + '/';
+            return withSlash.slice(0, -1);
+        }
+        const API_BASE = getBasePath();
 
         // Copyright-ID → Lizenzname (Corpus Nummorum)
         const CN_COPYRIGHT = {
@@ -568,7 +581,7 @@
         // ─── Münz-Galerie laden ───
         async function loadCoins() {
             try {
-                const resp = await fetch('coins.json');
+                const resp = await fetch(`${API_BASE}/coins.json`);
                 coins = await resp.json();
                 renderGallery();
             } catch (e) {
@@ -642,7 +655,7 @@
             const loadStart = Date.now();
 
             try {
-                const resp = await fetch('api/analyze', {
+                const resp = await fetch(`${API_BASE}/api/analyze`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
