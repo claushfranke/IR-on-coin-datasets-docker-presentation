@@ -62,10 +62,19 @@ Default ports can be changed via an `.env` file in the project root:
 ```ini
 BACKEND_PORT=8000
 FRONTEND_PORT=3000
+APP_BASE_PATH=
 ```
 
 Edit the values and restart the containers. The `:-` syntax in `docker-compose.yml` ensures
 default values are used if the variables are not set.
+
+For reverse proxies that expose the app under a sub-path, set `APP_BASE_PATH` (without trailing slash), for example:
+
+```ini
+APP_BASE_PATH=/imagnum-piai
+```
+
+Then the app is reachable at `https://<your-host>/imagnum-piai/` and API calls are routed automatically via the same prefix.
 
 ---
 
