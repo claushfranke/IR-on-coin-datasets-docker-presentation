@@ -399,7 +399,7 @@
                         </h4>
                         
                         <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-3">
-                            Diese Ki-Münzerkennung wurde von Forschern des Frankfurt Big Data Labs im Zuge eines Projektes mit Corpus Nummorum entwickelt.
+                            Diese KI-Münzerkennung wurde von Forschern des Frankfurt Big Data Labs im Zuge eines Projektes mit Corpus Nummorum entwickelt.
                             Die KI analysiert antike griechische Münzen mit spezialisierten Bildmodellen auf Expertenniveau.
                         </p>
                         <ul class="list-none p-0 space-y-2 text-sm sm:text-base text-slate-300 leading-relaxed">
@@ -460,7 +460,7 @@
 
                     <!-- GradCAM -->
                     <div class="bg-museum-card/60 rounded-2xl border border-gold/20 p-5">
-                        <h3 class="font-display text-lg text-gold mb-1">Worauf hat die KI geachtet?</h3>
+                        <h3 class="font-display text-lg text-gold mb-1">Worauf hat die KI geachtet? ...</h3>
                         <p class="text-slate-400 text-sm mb-4">
                             Die rechte Abbildung zeigt als Wärmebild, welche Stellen der Münze für die Entscheidung ausschlaggebend waren.
                             <span class="text-amber-400">Gelb/Rot</span> = besonders wichtig.
@@ -537,7 +537,8 @@
                 paragraphs: [
                     'Bei dieser Typbestimmung ist die Vorhersage nicht eindeutig.',
                     'Beim Typ 2509 entspricht das Rückseitenbild mit dem Preistisch dem zu vorhersagenden Typ und auch die Münzstätte Perinth ist richtig bestimmt. Die Vorderseite zeigt allerdings auf der zu bestimmenden Münze den Kaiser Elagabal und bei dem Typ 2509 den Kaiser Septimius Severus. Dass die KI diesen Unterschied nicht erkennt, ist nicht verwunderlich: Die Wärmebildanalyse zeigt, dass die Vorderseite bei dieser Bestimmung kaum eine Rolle gespielt hat – das Modell hat seine Entscheidung fast ausschließlich auf Grundlage der Rückseite getroffen.',
-                    'Die weiteren Vorhersagen CN-Typ 2086 und 7735 sind falsch, haben aber ohnehin nur eine sehr geringe Wahrscheinlichkeit erhalten. Das Modell gibt für jeden Analysevorgang eine Wahrscheinlichkeit für alle gelernten Typen aus; hier werden nur die fünf wahrscheinlichsten angezeigt. Münzstätte sowie Vorder- und Rückseitentyp sind in diesen Fällen nicht richtig bestimmt.',
+                    'Die weiteren Vorhersagen CN-Typ 2086 und 7735 sind falsch, haben aber ohnehin nur eine sehr geringe Wahrscheinlichkeit erhalten. Das Modell gibt für jeden Analysevorgang eine Wahrscheinlichkeit für alle gelernten Typen aus; hier werden nur die fünf wahrscheinlichsten angezeigt.',
+                    'Zu beachten ist außerdem, dass sich die Heatmap stets nur auf die wahrscheinlichste Vorhersage bezieht – in diesem Fall auf Typ 2509, bei dem das Modell fast ausschließlich die Rückseite ausgewertet hat.',
                     'Dies zeigt exemplarisch die Grenzen des Modells: Bei Münztypen, die im Trainingsmaterial nur selten oder gar nicht vorkamen, weicht die Vorhersage auf visuell ähnliche Typen aus. Je mehr Münzbilder eines Typs zum Training zur Verfügung stehen, desto zuverlässiger wird die Bestimmung.'
                 ]
             }
@@ -799,7 +800,7 @@
                              alt="QR-Code zum CN-Eintrag"
                              class="w-20 h-20 rounded-lg border border-gold/30"
                              loading="lazy">
-                        <p class="text-slate-500 text-xs text-center leading-snug">CN Nr. ${coin.cn_id}</p>
+                        <p class="text-slate-500 text-xs text-center leading-snug">QR-Code scannen<br>Infos zum Münztyp ${coin.cn_id}</p>
                     </div>
                 </div>
 
@@ -908,7 +909,7 @@
                              alt="QR-Code zum Corpus-Nummorum-Eintrag"
                              class="w-20 h-20 rounded-lg border border-gold/30"
                              loading="lazy">
-                        <p class="text-slate-500 text-xs leading-snug text-center">QR-Code scannen<br>zum CN-Eintrag</p>
+                        <p class="text-slate-500 text-xs leading-snug text-center">QR-Code scannen<br>zum Ergebnis</p>
                     </div>
                 `;
                 const typeInfoHtml = (mode === 'types' && pred.type_info)
